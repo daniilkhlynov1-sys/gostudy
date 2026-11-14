@@ -12,8 +12,9 @@ panel.innerHTML='<div class="gs-login-card"><div class="gs-brand">GoStudy</div><
 document.body.append(panel);
 const form=document.getElementById("gs-login-form"),error=document.getElementById("gs-error"),submit=document.getElementById("gs-submit");
 const client=window.supabase&&window.supabase.createClient?window.supabase.createClient(project,publishable,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}):null;
+window.gostudyAuthClient=client;
 if(!client){error.textContent="Не загрузилась система входа. Проверьте подключение к интернету.";return;}
-const show=()=>{document.body.classList.remove("gs-logged-in");panel.style.display="flex";document.getElementById("gs-account")?.remove();};
+const show=()=>{document.body.classList.remove("gs-logged-in");panel.style.display="flex";document.getElementById("gs-account")?.remove();document.dispatchEvent(new Event("gostudy:signedout"));};
 const accept=(user)=>{
   document.body.classList.add("gs-logged-in");panel.style.display="none";
   if(document.getElementById("gs-account"))return;
@@ -21,7 +22,7 @@ const accept=(user)=>{
   const email=document.createElement("span");email.textContent=user.email||"";
   const logout=document.createElement("button");logout.className="gs-logout";logout.textContent="Выйти";logout.type="button";
   logout.onclick=async()=>{await client.auth.signOut();show();form.reset()};
-  account.append(email,logout);document.querySelector("header")?.append(account);
+  account.append(email,logout);document.querySelector("header")?.append(account);document.dispatchEvent(new Event("gostudy:authenticated"));
 };
 const validate=async(user)=>{if(!user){show();return}if(String(user.email||"").toLowerCase()!==allowed){await client.auth.signOut();show();error.textContent="Этот кабинет предназначен для другого email.";return}accept(user);};
 form.addEventListener("submit",async(event)=>{
