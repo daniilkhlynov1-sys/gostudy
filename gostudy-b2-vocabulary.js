@@ -38,11 +38,12 @@ function localAdd(word){
  const list=document.querySelector("#vocabList");
  if(list)list.innerHTML=data.words.slice(-20).reverse().map(w=>'<div><b>'+String(w.en).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))+'</b> — '+String(w.ru).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))+'</div>').join("");
 }
-btn.onclick=async()=>{
+window.gostudySaveWord=async(providedWord)=>{
  const source=input.value.trim(),translation=result.textContent.trim();
- if(!source||!translation||translation==="Translating…"||translation.startsWith("Translation preview unavailable"))return;
+ if(!providedWord&&!source)return;
  const isRu=/[А-Яа-яЁё]/.test(source);
- const word={en:(isRu?translation:source).slice(0,200),ru:(isRu?source:translation).slice(0,400)};
+ const word=providedWord?{en:String(providedWord.en||"").slice(0,200),ru:String(providedWord.ru||"").slice(0,400)}:{en:(isRu?translation:source).slice(0,200),ru:(isRu?source:translation).slice(0,400)};
+ if(!word.en||!word.ru||translation==="Translating…")return;
  const client=window.gostudyAuthClient;
  if(!client){modal(word,"Нет подключения к Supabase. Попробуйте обновить страницу.",true);return}
  btn.disabled=true;btn.textContent="Сохраняем…";
@@ -55,7 +56,7 @@ btn.onclick=async()=>{
       teacher_id:user.id,student_id:studentId,en_key:word.en.trim().toLowerCase(),en:word.en,ru:word.ru,updated_at:new Date().toISOString()
     },{onConflict:"teacher_id,student_id,en_key"});
     if(e)throw e;
-    modal(word,"Добавлено в словарь ученицы. Она увидит слово после синхронизации.");
+    modal(word,"✓ Supabase подтвердил отправку ученице. Уведомление появится в её открытом кабинете.");
   }else if(email===studentEmail){
     localAdd(word);
     const {data:existing,error:loadError}=await client.from("gostudy_progress").select("state").eq("user_id",user.id).eq("lesson_key",dictionaryKey).maybeSingle();
@@ -73,7 +74,7 @@ btn.onclick=async()=>{
   btn.textContent="✓ Saved";
  }catch(e){
    console.warn("GoStudy vocabulary save",e);
-   modal(word,"Сохранение не завершено. Проверьте соединение и попробуйте ещё раз.",true);
+   modal(word,"Не удалось отправить в Supabase: "+(e?.message||"ошибка соединения"),true);
    btn.textContent="＋ To vocabulary";
  }finally{btn.disabled=false}
 };
