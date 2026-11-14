@@ -104,7 +104,7 @@ async function refresh(){
  finally{processing=false}
 }
 async function start(){
- if(user||stopped)return;
+ if(user)return;stopped=false;
  client=window.gostudyAuthClient||window.supabase?.createClient?.(project,publishable);
  if(!client){status("☁ Сервис недоступен","#bd4356");return}
  try{
@@ -120,6 +120,6 @@ async function start(){
  }catch(e){status("☁ Ошибка подключения","#bd4356")}
 }
 document.addEventListener("gostudy:authenticated",start);
-document.addEventListener("gostudy:signedout",()=>{stopped=true;ready=false;user=null;clearInterval(timer);clearInterval(poller);});
+document.addEventListener("gostudy:signedout",()=>{stopped=true;ready=false;user=null;clearInterval(timer);clearInterval(poller);status("☁ Войдите для синхронизации")});
 start();
 })();
