@@ -34,6 +34,22 @@ async function push(key,state){
  if(error)throw error;
  lastRemote[key]=canonical(state);lastLocal[key]=canonical(state);
 }
+async function importTeacherWords(){
+ const {data,error}=await client.from("gostudy_b2_word_assignments").select("en,ru").eq("student_id",user.id);
+ if(error)throw error;
+ if(!data||!data.length)return false;
+ const key="gostudy-business-ai-shared-v1",dict=local(key)||{},words=Array.isArray(dict.words)?dict.words.slice():[];
+ let changed=false;
+ for(const w of data){
+  if(!w||!w.en||!w.ru)continue;
+  const pos=words.findIndex(x=>String(x?.en||"").trim().toLowerCase()===String(w.en).trim().toLowerCase());
+  if(pos<0){words.push({en:w.en,ru:w.ru,assignedByTeacher:true});changed=true}
+  else if(words[pos].ru!==w.ru||!words[pos].assignedByTeacher){words[pos]={...words[pos],ru:w.ru,assignedByTeacher:true};changed=true}
+ }
+ if(!changed)return false;
+ const merged={...dict,words};saveLocal(key,merged);await push(key,merged);
+ return true;
+}
 async function bootstrap(){
  if(processing||stopped||!user)return;
  processing=true;ready=false;status("☁ Загружаем прогресс…");
@@ -55,7 +71,7 @@ async function bootstrap(){
     }else{lastLocal[key]=canonical(here);lastRemote[key]=canonical(null)}
   }
   for(const [key,value] of dirtyKeys)await push(key,value);
-  ready=true;status("☁ Синхронизировано","#16976d");
+  ready=true; if(await importTeacherWords())requireReload=true;status("☁ Синхронизировано","#16976d");
   if(requireReload)location.reload();
  }catch(e){console.warn("GoStudy cloud sync failed:",e);status("☁ Не удалось синхронизировать","#bd4356")}
  finally{processing=false}
@@ -95,6 +111,7 @@ async function refresh(){
     lastRemote[key]=canonical(cloud);lastLocal[key]=canonical(value);
     if(canonical(value)!==canonical(cloud))await push(key,value);
   }
+  if(await importTeacherWords())needsReload=true;
   status("☁ Синхронизировано","#16976d");
   if(needsReload)location.reload();
  }catch(e){console.warn("Cloud refresh error",e);status("☁ Нет соединения","#bd4356")}
