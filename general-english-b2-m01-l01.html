@@ -162,7 +162,7 @@ renderVocab();renderMCQ("#readingQuestions",READING,"r");renderMCQ("#grammarQues
 ["speakingNotes","homework"].forEach(id=>{$("#"+id).value=get(id);$("#"+id).addEventListener("input",e=>val(id,e.target.value))});
 function getWords(){try{const x=JSON.parse(localStorage.getItem(WORDS)||"{}");return Array.isArray(x.words)?x.words:[]}catch(e){return []}}
 function drawWords(){const words=getWords();$("#wordCount").textContent=words.length;$("#vocabList").innerHTML=words.slice(-20).reverse().map(w=>'<div><b>'+esc(w.en)+'</b> — '+esc(w.ru)+'</div>').join("")||"<div>No saved words yet</div>"}
-drawWords();go(state.page);
+drawWords();window.addEventListener("gostudy:vocab-changed",drawWords);go(state.page);
 (function(){
 const pop=$("#translatePop"),launcher=$("#translateLauncher"),inp=$("#translateInput"),out=$("#translateResult"),google=$("#translateGoogle"),btn=$("#translateNow"),add=$("#saveWord");
 let current="",meaning="",seq=0,ctrl=null,selectionTimer;
@@ -175,4 +175,4 @@ document.addEventListener("mouseup",e=>{if(!pop.contains(e.target))setTimeout(se
 launcher.onclick=()=>{let s=window.getSelection();open(s&&!s.isCollapsed?s.toString():current,null);inp.focus()};btn.onclick=()=>translate(inp.value);$("#translateClose").onclick=()=>{pop.classList.remove("show");if(ctrl)ctrl.abort();seq++};document.addEventListener("keydown",e=>{if(e.key==="Escape")pop.classList.remove("show")});
 add.onclick=()=>{if(!current||!meaning)return;const ru=/[А-Яа-яЁё]/.test(current),word={en:ru?meaning:current,ru:ru?current:meaning};try{const data=JSON.parse(localStorage.getItem(WORDS)||"{}");data.words=Array.isArray(data.words)?data.words:[];if(!data.words.some(w=>String(w.en).toLowerCase()===word.en.toLowerCase()))data.words.push(word);localStorage.setItem(WORDS,JSON.stringify(data));drawWords();add.textContent="✓ Saved"}catch(e){add.textContent="Saving unavailable"}};
 })();
-</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script><script src="gostudy-auth.js"></script><script src="gostudy-cloud.js"></script><script src="gostudy-b2-vocabulary.js"></script></body></html>
+</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script><script src="gostudy-auth.js"></script><script src="gostudy-cloud.js?v=3"></script><script src="gostudy-b2-vocabulary.js?v=2"></script></body></html>
