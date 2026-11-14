@@ -7,18 +7,15 @@ const publishable="sb_publishable_aAZxKwYpLcIXAjCiN5lBSg_qdFxvYwL";
 const path=location.pathname.split("/").pop().toLowerCase();
 const isCabinet=path==="student-turkey.html";
 const isB2=path==="general-english-b2-m01-l01.html";
-const isTurkey2=path==="turkey-b1-02.html";
-if(!isCabinet&&!isB2&&!isTurkey2)return;
-const keys=isCabinet?["gostudy-turkey-b1-v1","gostudy-turkey-profile-v1","gostudy-business-ai-shared-v1","gostudy-turkey-b1-lesson02-v1","gostudy-ge-b2-m01-l01-v1"]
-:isB2?["gostudy-ge-b2-m01-l01-v1","gostudy-business-ai-shared-v1"]
-:["gostudy-turkey-b1-lesson02-v1","gostudy-turkey-b1-v1"];
-const sharedKeys=new Set(["gostudy-business-ai-shared-v1","gostudy-turkey-b1-v1"]);
+if(!isCabinet&&!isB2)return;
+const keys=["gostudy-ge-b2-m01-l01-v1","gostudy-business-ai-shared-v1","gostudy-b2-student-profile-v1"];
+const sharedKeys=new Set(["gostudy-business-ai-shared-v1"]);
 let client=null,user=null,ready=false,stopped=false,processing=false,lastRemote={},lastLocal={},timer=null,poller=null;
 const el=document.createElement("span");el.id="gs-cloud-status";el.setAttribute("role","status");el.style.cssText="font-size:11px;font-weight:700;color:#74859d;margin-left:10px;white-space:nowrap";el.textContent="☁ Подключаем синхронизацию…";
 document.querySelector("header")?.append(el);
 function status(text,color){el.textContent=text;el.style.color=color||"#74859d"}
 function parse(value){if(!value)return null;try{const data=JSON.parse(value);return data&&typeof data==="object"&&!Array.isArray(data)?data:null}catch(e){return null}}
-function canonical(value){return JSON.stringify(value??{})}
+function canonical(value){const norm=v=>Array.isArray(v)?v.map(norm):v&&typeof v==="object"?Object.fromEntries(Object.keys(v).sort().map(k=>[k,norm(v[k])])):v;return JSON.stringify(norm(value??{}))}
 function local(key){return parse(localStorage.getItem(key))}
 function saveLocal(key,data){localStorage.setItem(key,canonical(data));lastLocal[key]=canonical(data)}
 function meaningful(obj){return obj&&Object.keys(obj).length>0}
@@ -50,7 +47,7 @@ async function bootstrap(){
     if(cloud){
       let result=cloud;
       if(sharedKeys.has(key)&&here)result=combineWords(cloud,here);
-      if(canonical(result)!==canonical(here)){saveLocal(key,result);if(key!=="gostudy-business-ai-shared-v1"&&key!=="gostudy-turkey-b1-v1")requireReload=true;}
+      if(canonical(result)!==canonical(here)){saveLocal(key,result);requireReload=true;}
       if(canonical(result)!==canonical(cloud))dirtyKeys.push([key,result]);
       lastRemote[key]=canonical(cloud);lastLocal[key]=canonical(result);
     }else if(meaningful(here)){
@@ -93,7 +90,7 @@ async function refresh(){
     if(sharedKeys.has(key))value=combineWords(cloud,local(key));
     if(canonical(value)!==canonical(local(key))){
       saveLocal(key,value);
-      if(!sharedKeys.has(key))needsReload=true;
+      needsReload=true;
     }
     lastRemote[key]=canonical(cloud);lastLocal[key]=canonical(value);
     if(canonical(value)!==canonical(cloud))await push(key,value);
