@@ -1,7 +1,7 @@
 
 (function(){
 "use strict";
-const allowed="iamshchikova.r@gmail.com";
+const allowed=new Set(["iamshchikova.r@gmail.com","daniil.khlynov1@gmail.com"]);
 const project="https://kawfqlohguwvmmplvrny.supabase.co";
 const publishable="sb_publishable_aAZxKwYpLcIXAjCiN5lBSg_qdFxvYwL";
 const style=document.createElement("style");
@@ -24,11 +24,11 @@ const accept=(user)=>{
   logout.onclick=async()=>{await client.auth.signOut();show();form.reset()};
   account.append(email,logout);document.querySelector("header")?.append(account);document.dispatchEvent(new Event("gostudy:authenticated"));
 };
-const validate=async(user)=>{if(!user){show();return}if(String(user.email||"").toLowerCase()!==allowed){await client.auth.signOut();show();error.textContent="Этот кабинет предназначен для другого email.";return}accept(user);};
+const validate=async(user)=>{if(!user){show();return}if(!allowed.has(String(user.email||"").toLowerCase())){await client.auth.signOut();show();error.textContent="Этот кабинет предназначен для другого email.";return}accept(user);};
 form.addEventListener("submit",async(event)=>{
 event.preventDefault();error.textContent="";
 const email=form.elements.email.value.trim().toLowerCase();
-if(email!==allowed){error.textContent="Этот email не привязан к кабинету.";return}
+if(!allowed.has(email)){error.textContent="Этот email не привязан к кабинету.";return}
 submit.disabled=true;submit.textContent="Проверяем…";
 try{
  const {data,error:e}=await client.auth.signInWithPassword({email,password:form.elements.password.value});
