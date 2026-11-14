@@ -9,6 +9,12 @@ const studentId="b0a12885-4971-4cbd-acc8-b469e486d5ed";
 const seenKey="gostudy-b2-word-notifications-v4-"+studentId;
 let client=null,polling=false,started=false,pollTimer=null,channel=null,active=null,userId=null;
 let queue=[];
+const status=document.createElement("span");
+status.id="gs-notice-status";
+status.style.cssText="display:inline-flex;margin-left:8px;font-size:11px;font-weight:700;color:#64748b";
+status.textContent="🔔 Уведомления: подключение…";
+document.querySelector("header")?.append(status);
+function setStatus(value,color){status.textContent=value;status.style.color=color||"#64748b"}
 const css=document.createElement("style");
 css.textContent='.gs-incoming-backdrop{position:fixed!important;inset:0!important;z-index:2147483000!important;background:#14284488!important;display:flex;align-items:center!important;justify-content:center!important;padding:18px!important}.gs-incoming-card{width:min(370px,100%)!important;background:#fff!important;color:#252c4a!important;border-radius:22px!important;padding:28px 24px!important;text-align:center!important;box-shadow:0 18px 65px #111c3455!important;font:15px/1.5 -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif!important}.gs-incoming-icon{display:grid;place-items:center;width:55px;height:55px;margin:0 auto 13px;border-radius:50%;background:#e2f9fc;color:#0499b2;font-size:28px;font-weight:850}.gs-incoming-title{font-size:20px!important;margin:0 0 15px!important;color:#212745!important}.gs-incoming-en{font-weight:850;font-size:23px;overflow-wrap:anywhere}.gs-incoming-ru{font-size:18px;color:#536584;margin:9px 0;overflow-wrap:anywhere}.gs-incoming-description{font-size:12px;color:#64728b;margin:14px 0 19px}.gs-incoming-ok{background:#02abc7;border:0;border-radius:12px;color:#fff;font:inherit;font-weight:850;padding:12px 28px;cursor:pointer;min-width:145px}';
 document.head.append(css);
@@ -41,6 +47,7 @@ async function scan(){
     .select("en_key,en,ru,updated_at")
     .eq("student_id",userId).order("updated_at",{ascending:true});
   if(error)throw error;
+  setStatus("🔔 Уведомления включены","#13845d");
   const done=seen();
   const queued=new Set(queue.map(x=>x.en_key));if(active)queued.add(active.en_key);
   for(const row of data||[]){
@@ -50,7 +57,7 @@ async function scan(){
   }
   render();
   if((data||[]).length)window.dispatchEvent(new Event("gostudy:check-assigned-vocabulary"));
- }catch(e){console.warn("GoStudy notification check failed:",e)}
+ }catch(e){console.warn("GoStudy notification check failed:",e);setStatus("🔔 Ошибка получения слов","#b33651")}
  finally{polling=false}
 }
 function subscribe(){
@@ -66,18 +73,19 @@ async function start(){
  if(!client)return;
  try{
   const {data,error}=await client.auth.getUser();
-  if(error||!data?.user||String(data.user.email||"").toLowerCase()!==studentEmail)return;
+  if(error||!data?.user)return;
+  if(String(data.user.email||"").toLowerCase()!==studentEmail){setStatus("🔔 Уведомления ученицы","#64748b");return;}
   userId=data.user.id;started=true;
   await scan();
   pollTimer=setInterval(scan,3000);
   window.addEventListener("focus",scan);
   document.addEventListener("visibilitychange",()=>{if(!document.hidden)scan()});
   subscribe();
- }catch(e){console.warn("GoStudy notification setup failed:",e)}
+ }catch(e){console.warn("GoStudy notification setup failed:",e);setStatus("🔔 Нет соединения","#b33651")}
 }
 function stop(){
  started=false;userId=null;queue=[];active=null;backdrop.style.display="none";
- if(pollTimer)clearInterval(pollTimer);pollTimer=null;
+ if(pollTimer)clearInterval(pollTimer);pollTimer=null;setStatus("🔔 Войдите в аккаунт");
  if(client&&channel)client.removeChannel(channel);channel=null;
 }
 document.addEventListener("gostudy:authenticated",()=>{setTimeout(start,0)});
