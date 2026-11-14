@@ -163,7 +163,7 @@ async function start(){
   if(error||!data?.user)return;
   if(String(data.user.email||"").toLowerCase()!=="iamshchikova.r@gmail.com")return;
   user=data.user;await bootstrap();
-  timer=setInterval(saveChanges,1600);poller=setInterval(refresh,14000);wordsPoller=setInterval(checkTeacherWords,5000);setTimeout(checkTeacherWords,700);
+  timer=setInterval(saveChanges,1600);poller=setInterval(refresh,14000);
   window.addEventListener("focus",refresh);
   window.addEventListener("pageshow",refresh);
   window.addEventListener("storage",e=>{if(keys.includes(e.key))setTimeout(saveChanges,400)});
