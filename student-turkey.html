@@ -67,4 +67,4 @@ function load(){
 $("#profileForm").addEventListener("submit",e=>{e.preventDefault();const p=read(PROFILE);p.name=$("#name").value.trim();localStorage.setItem(PROFILE,JSON.stringify(p));load();$("#profileForm").closest("details").open=false});
 $("#theme").addEventListener("click",()=>{const p=read(PROFILE);p.dark=!p.dark;localStorage.setItem(PROFILE,JSON.stringify(p));load()});
 window.addEventListener("pageshow",load);window.addEventListener("storage",load);window.addEventListener("gostudy:vocab-changed",load);load();
-</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script><script src="gostudy-auth.js"></script><script src="gostudy-cloud.js?v=3"></script><script src="gostudy-incoming-words.js?v=1"></script></body></html>
+</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script><script src="gostudy-auth.js"></script><script src="gostudy-cloud.js?v=3"></script><script src="gostudy-incoming-words.js?v=5"></script></body></html>
