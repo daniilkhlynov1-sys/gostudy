@@ -314,7 +314,7 @@ dialog h2{font-family:'Playfair Display',Georgia,serif}
 @media(prefers-reduced-motion:reduce){.lesson-card-link:hover{transform:none}}
 
 
-body[data-classroom-course]:not(.classroom-authorized) > :is(.top,main,dialog){display:none!important}
+body[data-classroom-course]:not(.classroom-authorized):not(.savva-public-preview) > :is(.top,main,dialog){display:none!important}
 body:is([data-classroom-course],[data-live-course]) .classroom-access{margin:24px auto;max-width:640px;padding:0 20px}
 
 body[data-classroom-course] .homework-link .homework-subject{max-width:100%;overflow-wrap:break-word}
