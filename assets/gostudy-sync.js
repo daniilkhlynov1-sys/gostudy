@@ -346,7 +346,7 @@
     const destinations = new Map([
       ['business-ai-finance', {name:'AI in Finance · B2',path:'student-business-ai-finance.html'}],
       ['general-english-b2', {name:'General English B2',path:'student-general-english-b2.html',keys:generalB2Keys}],
-      ['sports-b2', {name:'World Football Academies · B2',path:'student-sports-b2.html',keys:sportsB2Keys}],
+      ['sports-b2', {name:'World Football Academies · B2',path:'student.html',keys:sportsB2Keys}],
       [storiesCourse, {name:'General English B1',path:'student-general-english-b1-stories.html',keys:storiesKeys}],
       [generalB1Course, {name:'General English B1',path:'student-general-english-b1.html',keys:generalB1Keys}],
       ['country-house', {name:'Country House · A2',path:'student-country-house.html',keys:countryHouseKeys}],
