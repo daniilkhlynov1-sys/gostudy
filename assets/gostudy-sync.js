@@ -1,0 +1,1701 @@
+(() => {
+  'use strict';
+
+  const project = 'https://kawfqlohguwvmmplvrny.supabase.co';
+  const publicKey = 'sb_publishable_aAZxKwYpLcIXAjCiN5lBSg_qdFxvYwL';
+  const authKey = 'gostudy-cloud-session-v1';
+  const travelB2Keys = [
+    'gostudy-vocabulary-travel-b2-v1',
+    'gostudy-travel-disruptions-b2-v1',
+    'gostudy-travel-disruptions-b2-homework-v1',
+    'gostudy-travel-b2-02-v1',
+    'gostudy-travel-b2-02-homework-v1',
+    'gostudy-travel-b2-03-v1',
+    'gostudy-travel-b2-04-v1',
+    'gostudy-travel-b2-04-homework-new-v1',
+    'gostudy-travel-b2-profile-v1',
+  ];
+  const travelA2Keys = [
+    "gostudy-travel-a2plus-v1",
+    "gostudy-travel-a2plus-profile-v1",
+    "gostudy-travel-a2plus-homework-v1",
+    "gostudy-travel-a2plus-02-v1",
+    "gostudy-travel-a2plus-02-homework-v1",
+    "gostudy-travel-a2plus-03-v1",
+    "gostudy-travel-a2plus-03-homework-v1",
+    "gostudy-travel-a2plus-04-v1",
+    "gostudy-travel-a2plus-04-homework-v1",
+    "gostudy-positive-thinking-a2-v1",
+    "gostudy-positive-thinking-a2-homework-v1"
+  ];
+  const travelA2Pages = new Set([
+    "student-travel-a2.html",
+    "travel-weekend-a2.html",
+    "travel-a2-homework.html",
+    "travel-a2-02.html",
+    "travel-a2-02-homework.html",
+    "travel-a2-03.html",
+    "travel-a2-03-homework.html",
+    "travel-a2-04.html",
+    "travel-a2-04-homework.html",
+    "positive-thinking-a2.html",
+    "positive-thinking-a2-homework.html"
+  ]);
+  const travelA2 = travelA2Pages.has(location.pathname.split('/').pop()) ||
+    new URLSearchParams(location.search).get('course') === 'travel-a2';
+  const financePages = new Set(['student-finance-b1.html','finance-b1.html','finance-b1-homework.html','finance-b1-02.html','finance-b1-02-homework.html','finance-b1-ai-20261118.html']);
+  const financeB1 = financePages.has(location.pathname.split('/').pop()) ||
+    new URLSearchParams(location.search).get('course') === 'finance-b1';
+  const financeKeys = ['gostudy-finance-b1-v1','gostudy-finance-b1-profile-v1','gostudy-finance-b1-homework-v1','gostudy-finance-b1-02-v1','gostudy-finance-b1-02-homework-v1','gostudy-finance-b1-ai-20261118-v1'];
+  const feedPages = new Set(['student-feed-b2.html','feed-choice-b2.html','feed-b2-02.html','feed-b2-02-homework.html','feed-b2-03.html','feed-b2-03-homework.html','feed-b2-04.html','feed-b2-04-homework.html','korean-wave-b2-20261118.html']);
+  const feedB2 = feedPages.has(location.pathname.split('/').pop()) ||
+    new URLSearchParams(location.search).get('course') === 'feed-b2';
+  const feedKeys = ['gostudy-feed-b2-v1','gostudy-feed-b2-profile-v1','gostudy-feed-b2-02-v1','gostudy-feed-b2-02-homework-v1','gostudy-feed-b2-03-v1','gostudy-feed-b2-03-homework-v1','gostudy-feed-b2-04-v1','gostudy-feed-b2-04-homework-v1','gostudy-feed-b2-korean-wave-20261118-v1'];
+  const salesPages = new Set(['student-first-sales.html','first-sales-c1.html','first-sales-c1-homework.html','first-sales-c1-02.html','first-sales-c1-02-homework.html','first-sales-c1-03.html']);
+  const firstSales = salesPages.has(location.pathname.split('/').pop()) ||
+    new URLSearchParams(location.search).get('course') === 'first-sales';
+  const salesKeys = ['gostudy-first-sales-shared-v1','gostudy-first-sales-profile-v1','gostudy-first-sales-c1-v1','gostudy-first-sales-c1-homework-v1','gostudy-first-sales-c1-02-v1','gostudy-first-sales-c1-02-homework-v1','gostudy-first-sales-c1-03-v1'];
+  const pharmaPages = new Set(['student-pharma.html','pharma-c1.html','pharma-c1-02.html','pharma-c1-02-homework.html','pharma-c1-03.html','pharma-c1-03-homework.html','pharma-ai-evidence-c1-20261118.html']);
+  const pharmaC1 = pharmaPages.has(location.pathname.split('/').pop()) ||
+    new URLSearchParams(location.search).get('course') === 'pharma-c1';
+  const pharmaKeys = ['gostudy-pharma-c1-v1','gostudy-pharma-profile-v1','gostudy-pharma-c1-02-v1','gostudy-pharma-c1-02-homework-v1','gostudy-pharma-c1-03-v1','gostudy-pharma-c1-03-homework-v1','gostudy-pharma-c1-ai-evidence-20261118-v1'];
+  const tiktokPages = new Set(['student-tiktok-a2.html', 'tiktok-a2.html', 'tiktok-a2-homework.html']);
+  const tiktokA2 = tiktokPages.has(location.pathname.split('/').pop()) ||
+    new URLSearchParams(location.search).get('course') === 'tiktok-a2';
+  const tiktokKeys = ['gostudy-tiktok-a2-v1', 'gostudy-tiktok-a2-homework-v1', 'gostudy-tiktok-a2-words-v1'];
+  const currentPage = location.pathname.split('/').pop();
+  const countryHouse = ['student-country-house.html','country-house-a2.html','country-house-a2-02.html','country-house-a2-03.html','country-house-a2-04.html','country-house-a2-04-homework.html','country-house-travel-a2-05.html','country-house-travel-a2-05-homework.html','country-house-a2-homework.html','country-house-a2-02-homework.html','country-house-a2-03-homework.html'].includes(currentPage);
+  const countryHouseKeys = ['gostudy-country-house-a2-03-homework-v1','gostudy-vocabulary-country-house-v1','gostudy-country-house-a2-03-v1','gostudy-country-house-a2-04-v1','gostudy-country-house-a2-04-homework-v1','gostudy-country-house-travel-a2-05-v1','gostudy-country-house-travel-a2-05-homework-v1'];
+  const artB1 = ['student-art-b1.html','art-b1-03.html','art-b1-03-homework.html'].includes(currentPage) || document.querySelector('meta[name=gostudy-course]')?.content === 'art-b1';
+  const artB1Keys = ['gostudy-vocabulary-art-b1-v1','gostudy-art-b1-03-v1','gostudy-art-b1-03-homework-v1'];
+  const travelB2Cabinet = currentPage === 'student-travel-b2.html';
+  const businessAI = ['business-ai-b2c1-02.html','business-ai-b2c1-03.html','business-ai-b2c1-03-homework.html','student-business-ai.html'].includes(location.pathname.split('/').pop());
+  const businessAIKeys = ['gostudy-vocabulary-business-ai-v1','gostudy-business-ai-b2c1-02-v1','gostudy-business-ai-b2c1-03-v1','gostudy-business-ai-b2c1-03-homework-v1','gostudy-business-ai-b2c1-03-v2','gostudy-business-ai-b2c1-03-homework-v2','gostudy-business-ai-b2c1-03-v3','gostudy-business-ai-b2c1-03-homework-v3'];
+  const sportsB2Pages = ['student-sports-b2.html','barcelona-appeal-b2-04.html','barcelona-appeal-b2-04-homework.html'].includes(currentPage) || document.querySelector('meta[name=gostudy-course]')?.content === 'sports-b2';
+  const sportsB2Keys = ['gostudy-vocabulary-sports-b2-v1','gostudy-sports-b2-football-academies-04-v1','gostudy-sports-b2-football-academies-04-homework-v1'];
+  const generalB2Pages = ['student-general-english-b2.html','general-english-b2-01.html'].includes(currentPage);
+  const generalB2Keys = ['gostudy-vocabulary-general-english-b2-v1','gostudy-general-english-b2-01-v1','gostudy-general-english-b2-01-v2'];
+  const generalB1Course = 'general-english-b1';
+  const generalB1Cabinet = currentPage === 'student-general-english-b1.html';
+  const generalB1 = generalB1Cabinet || document.querySelector('meta[name=gostudy-course]')?.content === generalB1Course;
+  const generalB1Keys = ['gostudy-vocabulary-general-english-b1-v1','gostudy-general-english-b1-01-v1','gostudy-general-english-b1-01-homework-v1'];
+  const storiesCourse = 'general-english-b1-stories';
+  const storiesCabinet = currentPage === 'student-general-english-b1-stories.html';
+  const storiesKeys = ['gostudy-vocabulary-general-english-b1-stories-v1','gostudy-general-english-b1-stories-01-v1','gostudy-general-english-b1-stories-01-homework-v1'];
+  const storiesLesson = currentPage === 'general-english-b1-stories-01.html' || currentPage === 'general-english-b1-stories-01-homework.html';
+  const keys = new Set(sportsB2Pages ? sportsB2Keys : generalB2Pages ? generalB2Keys : storiesCabinet || storiesLesson ? storiesKeys : generalB1 ? generalB1Keys : tiktokA2 ? tiktokKeys : pharmaC1 ? pharmaKeys : firstSales ? salesKeys : feedB2 ? feedKeys : financeB1 ? financeKeys : travelA2 ? travelA2Keys : businessAI ? businessAIKeys : countryHouse ? countryHouseKeys : artB1 ? artB1Keys : travelB2Keys);
+  const courseName = tiktokA2 ? 'TikTok A2' : pharmaC1 ? 'Pharma C1' : firstSales ? 'First Sales C1' : feedB2 ? 'Feed B2' : financeB1 ? 'Finance B1' : travelA2 ? 'Travel A2+' : 'Travel B2';
+  const accountPage = 'gostudy-account.html' + (tiktokA2 ? '?course=tiktok-a2' : pharmaC1 ? '?course=pharma-c1' : firstSales ? '?course=first-sales' : feedB2 ? '?course=feed-b2' : financeB1 ? '?course=finance-b1' : travelA2 ? '?course=travel-a2' : '');
+  const cabinetPage = tiktokA2 ? 'student-tiktok-a2.html' : pharmaC1 ? 'student-pharma.html' : firstSales ? 'student-first-sales.html' : feedB2 ? 'student-feed-b2.html' : financeB1 ? 'student-finance-b1.html' : travelA2 ? 'student-travel-a2.html' : 'student-travel-b2.html';
+  const table = '/rest/v1/gostudy_progress';
+  const classroomCatalog = {sports_b2:{name:'Sport & Travel · B2',lessons:[{number:4,title:"Inside the World's Football Academies",lesson:'barcelona-appeal-b2-04.html',lessonKey:'gostudy-sports-b2-football-academies-04-v1',homework:'barcelona-appeal-b2-04-homework.html',homeworkKey:'gostudy-sports-b2-football-academies-04-homework-v1'}]},art_b1:{name:'Art & Mosaics · B1',lessons:[{title:'Small pieces, big ideas',lesson:'art-mosaics-b1.html',lessonKey:'gostudy-art-b1-v1',homework:'art-b1-homework.html'},{title:'Every picture has a story',lesson:'art-b1-02.html',lessonKey:'gostudy-art-b1-02-v1',homework:'art-b1-02-homework.html'},{title:'The Gallery Makeover',lesson:'art-b1-03.html',lessonKey:'gostudy-art-b1-03-v1',homework:'art-b1-03-homework.html',homeworkKey:'gostudy-art-b1-03-homework-v1'}]},general_english_b1_stories:{name:"General English B1 · Real Life, Real Stories",lessons:[{title:"Would You Live Here? · Travel & Life",lesson:"general-english-b1-stories-01.html",lessonKey:"gostudy-general-english-b1-stories-01-v1",homework:"general-english-b1-stories-01-homework.html",homeworkKey:"gostudy-general-english-b1-stories-01-homework-v1"}]},general_english_b1:{name:"General English B1",lessons:[{title:"When are you free?",lesson:"general-english-b1-01.html",lessonKey:"gostudy-general-english-b1-01-v1"}]},business_ai:{name:"Business AI · B2–C1",lessons:[{title:"AI at Work",lesson:"business-ai-b2c1.html",lessonKey:"gostudy-business-ai-b2c1-v1"},{title:"From AI Pilot to Rollout",lesson:"business-ai-b2c1-02.html",lessonKey:"gostudy-business-ai-b2c1-02-v1",homework:"business-ai-b2c1-homework.html"},{title:"The Price of a Bad Decision: AI and Business Choices",lesson:"business-ai-b2c1-03.html",lessonKey:"gostudy-business-ai-b2c1-03-v3",homework:"business-ai-b2c1-03-homework.html",homeworkKey:"gostudy-business-ai-b2c1-03-homework-v3"}]},country_house:{"name":"Country House · A2","lessons":[{"title":"A rainy weekend at the country house","lesson":"country-house-a2.html","lessonKey":"gostudy-country-house-lesson-a2-v1","homework":"country-house-a2-homework.html"},{"title":"A visit to the village shop","lesson":"country-house-a2-02.html","lessonKey":"gostudy-country-house-lesson-02-a2-v1","homework":"country-house-a2-02-homework.html"},{"title":"Before the Rain Comes","lesson":"country-house-a2-03.html?v=workbook-1&view=glass&words=11&live=1","lessonKey":"gostudy-country-house-a2-03-v1","homework":"country-house-a2-03-homework.html?v=1","homeworkKey":"gostudy-country-house-a2-03-homework-v1"},{title:"A Sunday Picnic Plan",lesson:"country-house-a2-04.html",lessonKey:"gostudy-country-house-a2-04-v1",homework:"country-house-a2-04-homework.html",homeworkKey:"gostudy-country-house-a2-04-homework-v1"},{title:"The Little Joys of Travelling",lesson:"country-house-travel-a2-05.html",lessonKey:"gostudy-country-house-travel-a2-05-v1",homework:"country-house-travel-a2-05-homework.html",homeworkKey:"gostudy-country-house-travel-a2-05-homework-v1"}]},travel_b2:{"name":"Travel B2","lessons":[{"title":"When the trip goes off plan","lesson":"travel-disruptions-b2.html","lessonKey":"gostudy-travel-disruptions-b2-v1","homework":"travel-homework-b2.html"},{"title":"The case of the missing suitcase","lesson":"travel-b2-02.html","lessonKey":"gostudy-travel-b2-02-v1","homework":"travel-b2-02-homework.html"},{"title":"A Room That Wasn’t There","lesson":"travel-b2-03.html","lessonKey":"gostudy-travel-b2-03-v1"},{"title":"The Last Connection","lesson":"travel-b2-04.html?view=glass&header=1&style=2&words=3&live=1","lessonKey":"gostudy-travel-b2-04-v1","homework":"travel-b2-04-practice.html","homeworkKey":"gostudy-travel-b2-04-homework-new-v1"}]},tiktok_a2: {"name": "TikTok A2", "lessons": [{"title": "One More Video?", "lesson": "tiktok-a2.html", "homework": "tiktok-a2-homework.html", "lessonKey": "gostudy-tiktok-a2-v1", "homeworkKey": "gostudy-tiktok-a2-homework-v1"}]},"travel_a2":{"name":"Travel A2+","lessons":[{"title":"A weekend away","lesson":"travel-weekend-a2.html","homework":"travel-a2-homework.html","lessonKey":"gostudy-travel-a2plus-v1","homeworkKey":"gostudy-travel-a2plus-homework-v1"},{"title":"A day out in York","lesson":"travel-a2-02.html","homework":"travel-a2-02-homework.html","lessonKey":"gostudy-travel-a2plus-02-v1","homeworkKey":"gostudy-travel-a2plus-02-homework-v1"},{"title":"A day by the sea","lesson":"travel-a2-03.html","homework":"travel-a2-03-homework.html","lessonKey":"gostudy-travel-a2plus-03-v1","homeworkKey":"gostudy-travel-a2plus-03-homework-v1"},{"title":"Positive Thinking","lesson":"positive-thinking-a2.html","homework":"positive-thinking-a2-homework.html","lessonKey":"gostudy-positive-thinking-a2-v1","homeworkKey":"gostudy-positive-thinking-a2-homework-v1"}]},"finance_b1":{"name":"Finance B1","lessons":[{"title":"Money moves","lesson":"finance-b1.html","homework":"finance-b1-homework.html","lessonKey":"gostudy-finance-b1-v1","homeworkKey":"gostudy-finance-b1-homework-v1"},{"title":"Where did my money go?","lesson":"finance-b1-02.html","homework":"finance-b1-02-homework.html","lessonKey":"gostudy-finance-b1-02-v1","homeworkKey":"gostudy-finance-b1-02-homework-v1"},{"title":"AI & Your Money: Who Can We Trust?","lesson":"finance-b1-ai-20261118.html","lessonKey":"gostudy-finance-b1-ai-20261118-v1"}]},"feed_b2":{"name":"Feed B2","lessons":[{"title":"Your feed, your choice?","lesson":"feed-choice-b2.html","homework":"feed-choice-b2.html#homework","lessonKey":"gostudy-feed-b2-v1","homeworkKey":"gostudy-feed-b2-v1"},{"title":"Before you share","lesson":"feed-b2-02.html","homework":"feed-b2-02-homework.html","lessonKey":"gostudy-feed-b2-02-v1","homeworkKey":"gostudy-feed-b2-02-homework-v1"},{"title":"Who’s selling what?","lesson":"feed-b2-03.html","homework":"feed-b2-03-homework.html","lessonKey":"gostudy-feed-b2-03-v1","homeworkKey":"gostudy-feed-b2-03-homework-v1"},{"title":"A real photo, a false story","lesson":"feed-b2-04.html","homework":"feed-b2-04-homework.html","lessonKey":"gostudy-feed-b2-04-v1","homeworkKey":"gostudy-feed-b2-04-homework-v1"},{"title":"Korean Wave: Who Influences Whom?","lesson":"korean-wave-b2-20261118.html","lessonKey":"gostudy-feed-b2-korean-wave-20261118-v1"}]},"first_sales":{"name":"First Sales C1","lessons":[{"title":"Your First Sales Interview","lesson":"first-sales-c1.html","homework":"first-sales-c1-homework.html","lessonKey":"gostudy-first-sales-c1-v1","homeworkKey":"gostudy-first-sales-c1-homework-v1"},{"title":"Your First Discovery Call","lesson":"first-sales-c1-02.html","homework":"first-sales-c1-02-homework.html","lessonKey":"gostudy-first-sales-c1-02-v1","homeworkKey":"gostudy-first-sales-c1-02-homework-v1"},{"title":"From Discovery to Value: The Follow-Up That Wins Trust","lesson":"first-sales-c1-03.html","lessonKey":"gostudy-first-sales-c1-03-v1"}]},"pharma_c1":{"name":"Pharma C1","lessons":[{"title":"Pharma marketing: beyond the launch","lesson":"pharma-c1.html","homework":"pharma-c1.html#homework","lessonKey":"gostudy-pharma-c1-v1","homeworkKey":"gostudy-pharma-c1-v1"},{"title":"From feedback to strategy","lesson":"pharma-c1-02.html","homework":"pharma-c1-02-homework.html","lessonKey":"gostudy-pharma-c1-02-v1","homeworkKey":"gostudy-pharma-c1-02-homework-v1"},{"title":"Can AI Help Doctors Spot Cancer?","lesson":"pharma-c1-03.html","homework":"pharma-c1-03-homework.html","lessonKey":"gostudy-pharma-c1-03-v1","homeworkKey":"gostudy-pharma-c1-03-homework-v1"},{"title":"Can AI Really Invent New Medicines?","lesson":"pharma-ai-evidence-c1-20261118.html","lessonKey":"gostudy-pharma-c1-ai-evidence-20261118-v1"}]}};
+  const classroomStudent = new URLSearchParams(location.search).get('classStudent');
+  const previewRecords = classroomStudent === null ? null : new Map();
+  const classroomPages = new Map(Object.entries(classroomCatalog).flatMap(([course, spec]) =>
+    spec.lessons.flatMap(lesson => [[lesson.lesson.split('?')[0], {course, key:lesson.lessonKey}], ...(lesson.homework && lesson.homeworkKey ? [[lesson.homework.split(/[?#]/)[0], {course, key:lesson.homeworkKey}]] : [])])));
+  function classroomLink(path, student) {
+    const url = new URL(path, location.href);
+    url.searchParams.set('classStudent', student);
+    return url.pathname.split('/').pop() + url.search + url.hash;
+  }
+  const json = (value, fallback = null) => {
+    try { return JSON.parse(value) ?? fallback; } catch { return fallback; }
+  };
+  const teacherSessionKey = 'gostudy-teacher-session-v1';
+  const teacherPage = currentPage === 'gostudy-teacher.html';
+  const teacherContext = teacherPage || classroomStudent !== null;
+  const studentSessionKey = 'gostudy-student-session-v1';
+  const rememberedKey = teacherContext ? teacherSessionKey : studentSessionKey;
+  function savedSession() {
+    try {
+      const value = json(localStorage.getItem(rememberedKey));
+      return value?.user?.id && value.access_token && value.refresh_token ? value : null;
+    } catch { return null; }
+  }
+  function readSession() {
+    try {
+      const value = json(sessionStorage.getItem(authKey));
+      return (teacherContext ? savedSession() : null) || (value?.user?.id && value.access_token ? value : null) || savedSession();
+    } catch { return null; }
+  }
+  let session = readSession();
+  window.addEventListener('storage', event => {
+    if (event.key !== rememberedKey || event.newValue !== null || !event.oldValue) return;
+    if (json(event.oldValue)?.user?.id !== session?.user?.id) return;
+    sessionStorage.removeItem(authKey);
+    session = null;
+    location.reload();
+  });
+  let queue = Promise.resolve();
+  let timer;
+  const conflicts = new Set();
+
+  function recordKey(key) {
+    return 'gostudy-cloud:' + session.user.id + ':' + key;
+  }
+  function readRecord(key) {
+    return json(localStorage.getItem(recordKey(key)), {revision: 0, value: null, dirty: false});
+  }
+  function writeRecord(key, record) {
+    localStorage.setItem(recordKey(key), JSON.stringify(record));
+  }
+  function notify(message) {
+    document.querySelectorAll('[data-cloud-status]').forEach(element => {
+      element.textContent = message;
+    });
+  }
+  function schedule() {
+    clearTimeout(timer);
+    timer = setTimeout(() => synchronize({reload: true}).catch(report), 250);
+  }
+  function report(error) {
+    notify(error.message || 'Не удалось связаться с Supabase. Изменения сохранены в этом браузере.');
+  }
+
+  window.GoStudyStorage = {
+    getItem(key) {
+      if (previewRecords && keys.has(key)) return previewRecords.get(key) ?? null;
+      return session && keys.has(key) ? readRecord(key).value : localStorage.getItem(key);
+    },
+    setItem(key, value) {
+      if (previewRecords && keys.has(key)) {
+        previewRecords.set(key, String(value));
+        return;
+      }
+      if (!session || !keys.has(key)) {
+        localStorage.setItem(key, value);
+        return;
+      }
+      const previous = readRecord(key);
+      const encoded = String(value);
+      if (previous.value === encoded) return;
+      writeRecord(key, {...previous, value: encoded, dirty: true});
+      schedule();
+    },
+  };
+
+  async function request(path, options = {}, accessToken = '') {
+    const response = await fetch(project + path, {
+      method: options.method || 'GET',
+      signal: AbortSignal.timeout(12000),
+      headers: {
+        apikey: publicKey,
+        ...(accessToken ? {Authorization: 'Bearer ' + accessToken} : {}),
+        ...(options.body ? {'Content-Type': 'application/json'} : {}),
+        ...(options.headers || {}),
+      },
+      body: options.body ? JSON.stringify(options.body) : undefined,
+    });
+    const data = response.status === 204 ? null : await response.json().catch(() => null);
+    return {ok: response.ok, status: response.status, data};
+  }
+  function saveSession(data, persist = false) {
+    session = {...data, expires_at: Date.now() + data.expires_in * 1000};
+    sessionStorage.setItem(authKey, JSON.stringify(session));
+    if (persist) localStorage.setItem(rememberedKey, JSON.stringify(session));
+  }
+  let refreshInFlight;
+  async function token() {
+    if (!session) throw new Error('Войдите в аккаунт GoStudy.');
+    const latestSaved = savedSession();
+    if (latestSaved?.user.id === session.user.id && latestSaved.expires_at > session.expires_at) session = latestSaved;
+    if (session.expires_at > Date.now() + 30000) return session.access_token;
+    const refresh = async () => {
+      const remembered = savedSession();
+      if (remembered?.user.id === session.user.id && remembered.expires_at > Date.now() + 30000) {
+        session = remembered;
+        return session.access_token;
+      }
+      const response = await request('/auth/v1/token?grant_type=refresh_token', {
+        method: 'POST', body: {refresh_token: remembered?.user.id === session.user.id ? remembered.refresh_token : session.refresh_token},
+      });
+      if (!response.ok) {
+        if (response.status === 400 || response.status === 401) {
+          if (remembered?.user.id === session.user.id) localStorage.removeItem(rememberedKey);
+          sessionStorage.removeItem(authKey);
+          session = null;
+          if (teacherPage) location.reload();
+          throw new Error('Срок входа истёк. Войдите снова.');
+        }
+        throw new Error('Не удалось обновить вход. Попробуйте ещё раз.');
+      }
+      saveSession(response.data, remembered?.user.id === session.user.id);
+      return session.access_token;
+    };
+    refreshInFlight ??= (navigator.locks
+      ? navigator.locks.request(rememberedKey,refresh)
+      : refresh()).finally(() => { refreshInFlight = null; });
+    return refreshInFlight;
+  }
+
+  if (document.body?.hasAttribute('data-finance-live')) {
+    window.GoStudyFinanceAuth = {token, request, userId: () => session?.user?.id, classroomStudent};
+    if (!document.body.hasAttribute("data-preserve-workbook-progress")) return;
+  }
+  async function push(key, accessToken) {
+    const current = readRecord(key);
+    if (!current.dirty || conflicts.has(key)) return;
+    const revision = current.revision + 1;
+    const body = {state: JSON.parse(current.value), revision};
+    const response = current.revision
+      ? await request(table + '?lesson_key=eq.' + encodeURIComponent(key) + '&revision=eq.' + current.revision,
+        {method: 'PATCH', headers: {Prefer: 'return=representation'}, body}, accessToken)
+      : await request(table, {method: 'POST', headers: {Prefer: 'return=representation'}, body: {...body, lesson_key: key}}, accessToken);
+    if (response.status === 409 || (response.ok && !response.data?.length)) {
+      conflicts.add(key);
+      return;
+    }
+    if (!response.ok) throw new Error('Не удалось отправить прогресс. Копия сохранена в этом браузере.');
+    const latest = readRecord(key);
+    if (latest.revision === current.revision) {
+      writeRecord(key, {...latest, revision, dirty: latest.value !== current.value});
+    }
+  }
+
+  async function pull(accessToken, replace = false) {
+    const response = await request(table + '?select=lesson_key,state,revision', {}, accessToken);
+    if (!response.ok || !Array.isArray(response.data)) throw new Error('Не удалось загрузить прогресс из Supabase.');
+    let changed = false;
+    for (const row of response.data) {
+      if (!keys.has(row.lesson_key)) continue;
+      const local = readRecord(row.lesson_key);
+      if (local.dirty && !replace) {
+        if (row.revision !== local.revision) conflicts.add(row.lesson_key);
+        continue;
+      }
+      const value = JSON.stringify(row.state);
+      if (replace || row.revision > local.revision) {
+        const vocabularyChanged = row.lesson_key === storiesKeys[0] && value !== local.value;
+        changed ||= !vocabularyChanged && value !== local.value;
+        writeRecord(row.lesson_key, {revision: row.revision, value, dirty: false});
+        conflicts.delete(row.lesson_key);
+        if (vocabularyChanged) document.dispatchEvent(new Event('gostudy-stories-vocabulary-updated'));
+      }
+    }
+    return changed;
+  }
+
+  function synchronize({reload = false, replace = false} = {}) {
+    const run = async () => {
+      if (!session) return;
+      const accessToken = await token();
+      if (!replace) for (const key of keys) await push(key, accessToken);
+      const changed = await pull(accessToken, replace);
+      if (conflicts.size) {
+        notify('Есть другая версия прогресса. Откройте настройки синхронизации.');
+      } else if (Array.from(keys).some(key => readRecord(key).dirty)) {
+        notify('Сохраняем изменения…');
+        schedule();
+      } else {
+        notify('Синхронизировано');
+      }
+      if (reload && changed && !conflicts.size) location.reload();
+    };
+    const pending = queue.then(run, run);
+    queue = pending.catch(() => {});
+    return pending;
+  }
+
+  async function authenticate(email, password) {
+    const response = await request('/auth/v1/token?grant_type=password', {
+      method: 'POST', body: {email, password},
+    });
+    if (!response.ok) throw new Error('Не удалось войти. Проверьте почту и пароль.');
+    saveSession(response.data);
+  }
+
+  function mergeLegacyFinanceWords() {
+    const legacyKey = 'gostudy-finance-b1-homework-v1';
+    const baseKey = 'gostudy-finance-b1-v1';
+    const marker = 'gostudy-finance-homework-words-merged';
+    try {
+      if (localStorage.getItem(marker)) return;
+      const old = json(localStorage.getItem(legacyKey));
+      if (!Array.isArray(old?.words) || !old.words.length) return;
+      const base = json(localStorage.getItem(baseKey),{});
+      if (!base || typeof base !== 'object' || Array.isArray(base)) return;
+      const words = new Map();
+      for (const word of [...old.words,...(Array.isArray(base.words) ? base.words : [])]) {
+        if (typeof word?.en === 'string' && typeof word.ru === 'string') words.set(word.en.trim().toLowerCase(),word);
+      }
+      localStorage.setItem(baseKey,JSON.stringify({...base,words:[...words.values()]}));
+      localStorage.setItem(marker,'1');
+    } catch {}
+  }
+  if (financeB1 && !session && !previewRecords) mergeLegacyFinanceWords();
+
+  async function importLocalProgress() {
+    if (keys.has('gostudy-finance-b1-v1')) mergeLegacyFinanceWords();
+    for (const key of keys) {
+      const local = json(localStorage.getItem(key));
+      if (!readRecord(key).value && local && typeof local === 'object' && !Array.isArray(local)) {
+        writeRecord(key, {revision: 0, value: JSON.stringify(local), dirty: true});
+      }
+    }
+    await synchronize();
+  }
+
+  async function signIn(email, password, importLocal) {
+    await authenticate(email, password);
+    await pull(session.access_token);
+    if (importLocal) await importLocalProgress();
+    localStorage.setItem(studentSessionKey,JSON.stringify(session));
+  }
+
+  function mountUnifiedAccount() {
+    const destinations = new Map([
+      ['business-ai-finance', {name:'AI in Finance · B2',path:'student-business-ai-finance.html'}],
+      ['general-english-b2', {name:'General English B2',path:'student-general-english-b2.html',keys:generalB2Keys}],
+      ['sports-b2', {name:'World Football Academies · B2',path:'student-sports-b2.html',keys:sportsB2Keys}],
+      [storiesCourse, {name:'General English B1',path:'student-general-english-b1-stories.html',keys:storiesKeys}],
+      [generalB1Course, {name:'General English B1',path:'student-general-english-b1.html',keys:generalB1Keys}],
+      ['country-house', {name:'Country House · A2',path:'student-country-house.html',keys:countryHouseKeys}],
+      ['business-ai', {name:'Business AI · B2–C1',path:'student-business-ai.html',keys:businessAIKeys}],
+      ['travel-b2', {name:'Travel B2',path:'student-travel-b2.html',keys:travelB2Keys}],
+      ['art-b1', {name:'Art & Mosaics · B1',path:'student-art-b1.html'}],
+      ['ielts-reading', {name:'IELTS Reading',path:'student-ielts-reading.html'}],
+      ['english-placement', {name:'English Placement Test',path:'student-english-placement.html'}],
+      ['sweden-a2', {name:'Sweden · A2',path:'student-sweden.html'}],
+      ['travel-a2', {name: 'Travel A2+', path: 'student-travel-a2.html', keys: travelA2Keys}],
+      ['finance-b1', {name: 'Finance B1', path: 'student-finance-b1.html', keys: financeKeys}],
+      ['tiktok-a2', {name: 'TikTok A2', path: 'student-tiktok-a2.html', keys: tiktokKeys}],
+      ['feed-b2', {name: 'Feed B2', path: 'student-feed-b2.html', keys: feedKeys}],
+      ['first-sales', {name: 'First Sales C1', path: 'student-first-sales.html', keys: salesKeys}],
+      ['pharma-c1', {name: 'Pharma C1', path: 'student-pharma.html', keys: pharmaKeys}],
+      ['teacher', {name: 'Кабинет преподавателя', path: 'gostudy-teacher.html'}],
+    ]);
+    const form = document.getElementById('unified-login');
+    const dashboard = document.getElementById('unified-dashboard');
+    const email = document.getElementById('unified-email');
+    const list = document.getElementById('unified-destinations');
+    const status = document.getElementById('unified-status');
+    const retry = document.getElementById('unified-retry');
+    const signout = document.getElementById('unified-signout');
+    const submit = form.querySelector('button');
+    let importLocal = false;
+    let busy = false;
+
+    function renderSession() {
+      form.hidden = !!session;
+      dashboard.hidden = !session;
+      email.textContent = session?.user?.email || '';
+    }
+
+    async function open(destination) {
+      if (destination.keys) {
+        keys.clear();
+        for (const key of destination.keys) keys.add(key);
+        await pull(await token());
+        if (importLocal) await importLocalProgress();
+      }
+      if (destination.path === 'gostudy-teacher.html') localStorage.setItem(teacherSessionKey,JSON.stringify(session));
+      else localStorage.setItem(studentSessionKey,JSON.stringify(session));
+      location.assign(destination.path);
+    }
+
+    async function run(action) {
+      if (busy) return;
+      busy = true;
+      submit.disabled = retry.disabled = signout.disabled = true;
+      list.querySelectorAll('button').forEach(button => { button.disabled = true; });
+      retry.hidden = true;
+      status.textContent = 'Загружаем кабинет…';
+      try {
+        await action();
+      } catch (error) {
+        if (error.message === 'Срок входа истёк. Войдите снова.') {
+          if (savedSession()?.user.id === session?.user.id) localStorage.removeItem(rememberedKey);
+          sessionStorage.removeItem(authKey);
+          session = null;
+        }
+        renderSession();
+        status.textContent = error instanceof TypeError ? 'Не удалось подключиться. Попробуйте ещё раз.' : error.message;
+        retry.hidden = !session;
+      } finally {
+        busy = false;
+        submit.disabled = retry.disabled = signout.disabled = false;
+        list.querySelectorAll('button').forEach(button => { button.disabled = false; });
+      }
+    }
+
+    async function loadDestinations() {
+      const response = await request('/rest/v1/rpc/gostudy_my_destinations', {method: 'POST', body: {}}, await token());
+      if (response.status === 401) throw new Error('Срок входа истёк. Войдите снова.');
+      if (!response.ok || !Array.isArray(response.data)) throw new Error('Не удалось загрузить назначенные курсы. Попробуйте ещё раз.');
+      const options = [...new Set(response.data.map(row => row.course))]
+        .map(course => destinations.get(course)).filter(Boolean);
+      if (!options.length && session.user.app_metadata?.gostudy_without_course === true) {
+        localStorage.setItem(studentSessionKey,JSON.stringify(session));
+        document.title = 'Личный кабинет · GoStudy';
+        document.getElementById('unified-title').textContent = 'Личный кабинет';
+        document.getElementById('unified-description').textContent = 'Преподаватель пока не назначил курс.';
+        list.replaceChildren();
+        status.textContent = '';
+        return;
+      }
+      if (options.length === 1) {
+        await open(options[0]);
+        return;
+      }
+      list.replaceChildren(...options.map(destination => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = destination.name;
+        button.addEventListener('click', () => run(() => open(destination)));
+        return button;
+      }));
+      status.textContent = options.length ? 'Выберите кабинет.' : 'К этому аккаунту пока не привязаны уроки. Обратитесь к преподавателю.';
+    }
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const password = form.elements.password.value;
+      form.elements.password.value = '';
+      importLocal = form.elements.importLocal.checked;
+      run(async () => {
+        await authenticate(form.elements.email.value.trim(), password);
+        renderSession();
+        await loadDestinations();
+      });
+    });
+    retry.addEventListener('click', () => run(loadDestinations));
+    signout.addEventListener('click', () => {
+      if (savedSession()?.user.id === session?.user.id) localStorage.removeItem(rememberedKey);
+      sessionStorage.removeItem(authKey);
+      location.reload();
+    });
+    renderSession();
+    if (session) run(loadDestinations);
+  }
+
+  function mountAccount() {
+    const form = document.getElementById('cloud-login');
+    const cabinetLink = document.getElementById('cloud-cabinet');
+    if (cabinetLink) {
+      cabinetLink.href = cabinetPage;
+      cabinetLink.textContent = '← Кабинет ' + courseName;
+    }
+    const intro = document.getElementById('cloud-intro');
+    if (intro) intro.textContent = 'Войдите, чтобы сохранять ответы, открытые разделы и слова ' + courseName + ' между устройствами.';
+    document.title = 'Аккаунт GoStudy · ' + courseName;
+    const settings = document.getElementById('cloud-settings');
+    const status = document.getElementById('cloud-message');
+    const render = () => {
+      form.hidden = !!session;
+      settings.hidden = !session;
+      document.getElementById('cloud-email').textContent = session?.user?.email || '';
+    };
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const button = form.querySelector('button');
+      const password = form.elements.password.value;
+      form.elements.password.value = '';
+      button.disabled = true;
+      status.textContent = 'Входим…';
+      try {
+        await signIn(form.elements.email.value.trim(), password, form.elements.importLocal.checked);
+        location.assign(cabinetPage);
+      } catch (error) {
+        render();
+        status.textContent = error.message;
+      } finally { button.disabled = false; }
+    });
+    document.getElementById('cloud-sync').onclick = () => synchronize().catch(report);
+    document.getElementById('cloud-restore').onclick = () => synchronize({replace: true}).catch(report);
+    document.getElementById('cloud-signout').onclick = () => {
+      clearTimeout(timer);
+      if (savedSession()?.user.id === session?.user.id) localStorage.removeItem(rememberedKey);
+      sessionStorage.removeItem(authKey);
+      location.assign(cabinetPage);
+    };
+    render();
+    if (session) synchronize().catch(report);
+  }
+
+  function mountStudentHome() {
+    const home = document.getElementById('student-home');
+    if (!home) return;
+    const course = tiktokA2 ? 'tiktok_a2' : pharmaC1 ? 'pharma_c1' : firstSales ? 'first_sales' : feedB2 ? 'feed_b2' : financeB1 ? 'finance_b1' : 'travel_a2';
+    const courseHome = countryHouse ? {
+      title: 'Before the Rain Comes', lesson: 'country-house-a2-03.html?v=workbook-1',
+      lessonKey: 'gostudy-country-house-a2-03-v1', homework: 'country-house-a2-03-homework.html?v=1',
+      homeworkTitle: 'Sunday at the Cottage', cover: 'assets/country-house-a2-03-cover.png',
+      vocabulary: 'country-house-a2-homework.html#vocabulary', words: 'gostudy-country-house-homework-a2-v1'
+    } : travelB2Cabinet ? {
+      title: 'The Last Connection', lesson: 'travel-b2-04.html?v=workbook-1',
+      lessonKey: 'gostudy-travel-b2-04-v1', homework: 'travel-b2-04-practice.html',
+      homeworkTitle: 'The Last Connection · Homework', cover: 'assets/travel-b2-04-cover.png',
+      vocabulary: 'travel-disruptions-b2.html#vocabulary', words: 'gostudy-travel-disruptions-b2-v1'
+    } : null;
+    const catalogCourse = storiesCabinet ? 'general_english_b1_stories' : generalB1 ? 'general_english_b1' : countryHouse ? 'country_house' : travelB2Cabinet ? 'travel_b2' : businessAI ? 'business_ai' : course;
+    const currentLesson = classroomCatalog[catalogCourse].lessons.at(-1);
+    const lesson = {...courseHome,...currentLesson,homework:currentLesson.homework || courseHome?.homework};
+    const started = json(GoStudyStorage.getItem(lesson.lessonKey),{});
+    home.innerHTML = '<div class="home-duo"><article class="home-current home-homework"><p>Домашнее задание</p><h2></h2><div class="home-actions"><a class="home-primary home-homework-link">Сделать задание</a></div></article><article class="home-current home-lesson"><p>Текущий урок</p><h2></h2><div class="home-actions"><a class="home-primary home-open-lesson"></a></div></article></div><div class="home-tools"><a class="home-tile"><strong>Словарь</strong><small>Мои слова</small></a><button type="button" class="home-tile"><strong>Тренировки</strong><small>Повторить слова</small></button></div><dialog class="home-training"><h2>Тренировка слов</h2><p role="status"></p><strong class="home-prompt"></strong><p class="home-meaning" hidden></p><div class="home-actions"><button type="button" class="home-reveal">Показать перевод</button><button type="button" class="home-next">Следующее слово</button><button type="button" class="home-close">Закрыть</button></div></dialog>';
+    const cover = document.querySelector('.content-grid section img');
+    const visual = document.createElement(cover || businessAI || courseHome ? 'img' : 'span');
+    visual.className = 'home-cover';
+    if (cover || businessAI || courseHome) { visual.src = courseHome?.cover || (businessAI ? 'assets/gostudy-ai-pilot.png' : cover.src); visual.alt = ''; }
+    else { visual.textContent = generalB1 ? '☕' : tiktokA2 ? '🎬' : '🧳'; visual.setAttribute('aria-hidden','true'); }
+    home.querySelector('.home-homework').append(visual);
+    home.querySelectorAll('.home-current h2').forEach(title => { title.textContent = lesson.title; });
+    if (businessAI || courseHome) home.querySelector('.home-homework h2').textContent = courseHome?.homeworkTitle || 'AI at Work';
+    const open = home.querySelector('.home-open-lesson');
+    const homework = home.querySelector('.home-homework-link');
+    const dictionary = home.querySelector('a.home-tile');
+    open.href = lesson.lesson;
+    open.textContent = started.page > 0 || Object.keys(started.answers || {}).length ? 'Продолжить урок' : 'Открыть урок';
+    if (lesson.homework) homework.href = lesson.homework;
+    else if (financeB1) {
+      homework.removeAttribute('href');
+      homework.textContent = 'Домашнее задание не назначено';
+      homework.setAttribute('aria-disabled', 'true');
+      homework.style.cssText = 'pointer-events:none;opacity:.55;cursor:not-allowed';
+      homework.closest('article').querySelector('h2').textContent = 'Пока нет задания';
+    } else {
+      homework.closest('article').remove();
+      home.querySelector('.home-duo').style.gridTemplateColumns = 'minmax(0,1fr)';
+    }
+    dictionary.href = document.body.dataset.vocabCourse ? '#student-home' : courseHome ? courseHome.vocabulary : businessAI ? 'business-ai-b2c1.html#vocabulary' : tiktokA2 ? '#words' : lesson.lesson+'#vocabulary';
+    if (tiktokA2) dictionary.onclick = event => { event.preventDefault(); document.getElementById('dictBtn')?.click(); };
+    const wordKey = storiesCabinet ? storiesKeys[0] : courseHome ? courseHome.words : businessAI ? 'gostudy-business-ai-shared-v1' : {tiktok_a2:'gostudy-tiktok-a2-words-v1',first_sales:'gostudy-first-sales-shared-v1'}[course] || classroomCatalog[course].lessons[0].lessonKey;
+    const dialog = home.querySelector('dialog');
+    const status = dialog.querySelector('[role="status"]');
+    const prompt = dialog.querySelector('.home-prompt');
+    const meaning = dialog.querySelector('.home-meaning');
+    const reveal = dialog.querySelector('.home-reveal');
+    const next = dialog.querySelector('.home-next');
+    let words = [], index = 0, generation = 0;
+    function showWord() {
+      const word = words[index];
+      status.textContent = word ? (index+1)+' / '+words.length : 'В словаре пока нет слов.';
+      prompt.textContent = word?.en || '';
+      meaning.textContent = word?.ru || '';
+      meaning.hidden = true;
+      reveal.hidden = next.hidden = !word;
+    }
+    home.querySelector('button.home-tile').onclick = async () => {
+      const run = ++generation;
+      const saved = json(courseHome ? localStorage.getItem(wordKey) || GoStudyStorage.getItem(wordKey) : GoStudyStorage.getItem(wordKey),{});
+      const own = Array.isArray(saved) ? saved : Array.isArray(saved.words) ? saved.words : [];
+      words = own.filter(w => typeof w?.en === 'string' && typeof w.ru === 'string');
+      index = 0;
+      showWord();
+      dialog.showModal();
+      if (!session || businessAI || courseHome) return;
+      try {
+        const result = await request('/rest/v1/rpc/gostudy_'+course+'_my_words',{method:'POST',body:{}},await token());
+        if (!dialog.open || run !== generation || !result.ok || !Array.isArray(result.data)) return;
+        const combined = new Map(words.map(w => [w.en.trim().toLowerCase(),w]));
+        for (const w of result.data) if (typeof w?.en === 'string' && typeof w.ru === 'string') {
+          const key = w.en.trim().toLowerCase();
+          if (!combined.has(key)) combined.set(key,w);
+        }
+        words = [...combined.values()];
+        showWord();
+      } catch {}
+    };
+    reveal.onclick = () => { meaning.hidden = false; };
+    next.onclick = () => { if (words.length) index = (index+1)%words.length; showWord(); };
+    dialog.querySelector('.home-close').onclick = () => dialog.close();
+    const nav = document.createElement('nav');
+    nav.className = 'home-top-nav';
+    nav.setAttribute('aria-label','Разделы кабинета');
+    const main = document.createElement('a');
+    main.href = '#student-home';
+    main.textContent = 'Главная';
+    main.setAttribute('aria-current','page');
+    const homeworkNav = document.createElement('a');
+    homeworkNav.href = homework.href;
+    homeworkNav.textContent = 'Домашка';
+    const dictionaryNav = document.createElement('a');
+    dictionaryNav.href = dictionary.href;
+    dictionaryNav.textContent = 'Словарь';
+    if (tiktokA2) dictionaryNav.onclick = event => { event.preventDefault(); dictionary.click(); };
+    const practiceNav = document.createElement('button');
+    practiceNav.type = 'button';
+    practiceNav.textContent = 'Практика';
+    practiceNav.onclick = () => home.querySelector('button.home-tile').click();
+    nav.append(main);
+    if (lesson.homework) nav.append(homeworkNav);
+    nav.append(dictionaryNav,practiceNav);
+    const header = document.querySelector('header.topbar');
+    if (header) header.append(nav);
+    document.body.classList.add('gostudy-student-home');
+  }
+
+  async function mountProtectedCabinet(content, course, title) {
+    const status = document.getElementById('cabinet-status');
+    if (!session) {
+      location.replace('login.html');
+      return;
+    }
+    try {
+      const response = await request('/rest/v1/rpc/gostudy_my_destinations', {method:'POST', body:{}}, await token());
+      if (response.status === 401) throw new Error('Срок входа истёк. Войдите снова.');
+      if (!response.ok || !Array.isArray(response.data)) throw new Error('Не удалось открыть кабинет. Обновите страницу.');
+      if (!response.data.some(row => row.course === course)) {
+        if (course === 'travel-b2' && response.data.some(row => row.course === storiesCourse)) {
+          location.replace('student-general-english-b1-stories.html');
+          return;
+        }
+        throw new Error('Курс '+title+' не назначен этому аккаунту.');
+      }
+      if (((storiesCabinet || generalB1Cabinet) && document.body.hasAttribute('data-unified-b1-cabinet')) || (tiktokA2 && document.body.hasAttribute('data-unified-course-cabinet'))) {
+        // Same actual cabinet renderer and word-training component as Michael.
+        // Load them only AFTER the existing B1 access RPC succeeds.
+        const loadScript = src => new Promise((resolve,reject)=>{
+          const script=document.createElement('script');
+          script.src=src;script.onload=resolve;script.onerror=()=>reject(Error('Не удалось загрузить кабинет. Обновите страницу.'));
+          document.body.append(script);
+        });
+        await loadScript('assets/gostudy-v1-cabinet.js?v=b1-unified-20261120');
+        status.hidden = true;
+        content.hidden = true;
+        mountLesson();
+        await loadScript('assets/gostudy-v1-vocabulary.js?v=b1-unified-20261120');
+        // Keep Michael's training UI, but read teacher-assigned words from
+        // the B1 course's existing protected RPC — never finance-room tables.
+        const refreshWords = async () => {
+          if (document.hidden) return;
+          try {
+            const words=tiktokA2
+              ? (await request('/rest/v1/rpc/gostudy_tiktok_a2_my_words',
+                  {method:'POST',body:{}},await token())).data
+              : await window.GoStudyWorkbookWords?.read();
+            if (!Array.isArray(words)) return;
+            const signature=JSON.stringify(words);
+            if (signature !== window.GoStudyB1AssignedSignature) {
+              window.GoStudyB1AssignedSignature=signature;
+              window.GoStudyB1AssignedWords=words;
+              document.dispatchEvent(new Event('b1-vocabulary-updated'));
+            }
+          }catch{}
+        };
+        refreshWords();
+        window.addEventListener('focus',refreshWords);
+        const timer=setInterval(refreshWords,20000);
+        window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});
+        // Progress sync may finish after the initial cabinet render.
+        setTimeout(()=>window.dispatchEvent(new Event('pageshow')),1200);
+        return;
+      }
+      status.hidden = true;
+      content.hidden = false;
+      mountStudentHome();
+      mountLesson();
+      mountTeacherWords();
+    } catch (error) {
+      if (error.message === 'Срок входа истёк. Войдите снова.') sessionStorage.removeItem(authKey);
+      (status.querySelector('span') || status).textContent = error.message;
+    }
+  }
+
+  async function mountStoriesWorkbook() {
+    const status = document.getElementById('lesson-access');
+    if (!session) {
+      location.replace(classroomStudent === null ? 'login.html' : 'gostudy-teacher.html');
+      return;
+    }
+    try {
+      const response = await request('/rest/v1/rpc/gostudy_b1_stories_content', {
+        method:'POST',
+        body:{p_homework:currentPage.endsWith('-homework.html'),p_student:classroomStudent},
+      }, await token());
+      if (response.status === 401) throw new Error('Срок входа истёк. Войдите снова.');
+      if (!response.ok) throw new Error('Не удалось загрузить урок. Обновите страницу.');
+      if (!response.data) throw new Error('Урок не назначен этому аккаунту.');
+      // Keep the original protected RPC gate. Only the authorized lesson (not
+      // the old homework) receives new, separately authored lesson material.
+      // The established progress key retains historical answers and teacher view.
+      if (currentPage === 'general-english-b1-stories-01.html') {
+        const lessonFile = await fetch('assets/gostudy-b1-stories-would-you-live-here-20261120.json?v=1', {cache:'no-store'});
+        if (!lessonFile.ok) throw new Error('Не удалось загрузить урок Would You Live Here?. Обновите страницу.');
+        const nextLesson = await lessonFile.json();
+        if (nextLesson.key !== storiesKeys[1] || nextLesson.steps?.length !== 8 || nextLesson.steps.reduce((minutes,step)=>minutes+Number(step.minutes||0),0) !== 50 || nextLesson.vocabulary?.length !== 6) throw new Error('Ошибка проверки содержания урока.');
+        response.data = nextLesson;
+      } else if (currentPage === 'general-english-b1-stories-01-homework.html') {
+        const homeworkFile = await fetch('assets/gostudy-b1-stories-new-homework-20261120.json?v=1', {cache:'no-store'});
+        if (!homeworkFile.ok) throw new Error('Не удалось загрузить новое домашнее задание. Обновите страницу.');
+        const nextHomework = await homeworkFile.json();
+        if (nextHomework.key !== storiesKeys[2] || nextHomework.steps?.length !== 2 || nextHomework.steps.reduce((minutes,step)=>minutes+Number(step.minutes||0),0) !== 20) throw new Error('Ошибка проверки домашнего задания.');
+        response.data = nextHomework;
+      }
+      if (classroomStudent !== null) {
+        response.data.cabinet = 'gostudy-teacher.html?selected='+encodeURIComponent('general_english_b1_stories:'+classroomStudent);
+      }
+      const config = document.createElement('script');
+      config.type = 'application/json';
+      config.id = 'lesson-data';
+      config.textContent = JSON.stringify(response.data);
+      document.body.append(config);
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = status.dataset.workbook;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.body.append(script);
+      });
+      document.querySelector('.room').hidden = false;
+      status.hidden = true;
+      // Only after the protected B1 access RPC succeeds do we expose
+      // authenticated video helpers and mount the persistent JaaS panel.
+      if (currentPage === 'general-english-b1-stories-01.html') {
+        window.GoStudyB1VideoAuth = { token, request, userId:()=>session?.user?.id, classroomStudent };
+        const video = document.createElement('script');
+        video.src = 'assets/gostudy-b1-stories-video.js?v=b1-20261120-1';
+        document.body.append(video);
+        // Isolated lesson chat runs only after the protected course RPC succeeds.
+        const chat = document.createElement('script');
+        chat.src = 'assets/gostudy-b1-stories-chat.js?v=b1-20261120-1';
+        document.body.append(chat);
+      }
+      if (classroomStudent === null) mountLesson();
+      const vocabulary = document.createElement('script');
+      vocabulary.src = status.dataset.vocabulary;
+      if (currentPage === 'general-english-b1-stories-01.html') {
+        const button=document.getElementById('b1LessonDictionary');
+        if(button){
+          button.disabled=true;
+          vocabulary.addEventListener('load',()=>{button.disabled=false;});
+          vocabulary.addEventListener('error',()=>{button.title='Словарь не загрузился. Обновите страницу.';});
+          button.addEventListener('click',()=>{
+            window.GoStudyB1Glossary?.open('words');
+          });
+        }
+        // Same Michael selection popup only after the B1 vocabulary store is
+        // fully initialized. No unrelated finance lesson components are loaded.
+        vocabulary.addEventListener('load',()=>{
+          const translator=document.createElement('script');
+          translator.src='assets/gostudy-b1-michael-selection.js?v=b1-word-feedback-20261120';
+          document.body.append(translator);
+        },{once:true});
+      }
+      document.body.append(vocabulary);
+    } catch (error) {
+      status.textContent = error.message || 'Не удалось открыть урок. Обновите страницу.';
+    }
+  }
+
+  const liveLesson = {
+    'finance-b1-ai-20261118.html':['finance_b1','gostudy-finance-b1-ai-20261118-v1'],
+    'positive-thinking-a2.html':['travel_a2','gostudy-positive-thinking-a2-v1'],
+    'tiktok-a2.html':['tiktok_a2','gostudy-tiktok-a2-v1'],
+    'positive-thinking-a2-homework.html':['travel_a2','gostudy-positive-thinking-a2-homework-v1'],
+    'general-english-b1-stories-01.html':['general_english_b1_stories',storiesKeys[1]],
+    'general-english-b1-stories-01-homework.html':['general_english_b1_stories',storiesKeys[2]],
+    'general-english-b1-01.html':['general_english_b1',generalB1Keys[1]],
+    'general-english-b1-01-homework.html':['general_english_b1',generalB1Keys[2]],
+    'business-ai-b2c1-02.html':['business_ai','gostudy-business-ai-b2c1-02-v1'],
+    'business-ai-b2c1-03.html':['business_ai','gostudy-business-ai-b2c1-03-v3'],
+    'business-ai-b2c1-03-homework.html':['business_ai','gostudy-business-ai-b2c1-03-homework-v3'],
+    'art-b1-03.html':['art_b1','gostudy-art-b1-03-v1'],
+    'art-b1-03-homework.html':['art_b1','gostudy-art-b1-03-homework-v1'],
+    'country-house-a2-04.html':['country_house','gostudy-country-house-a2-04-v1'],
+    'country-house-a2-04-homework.html':['country_house','gostudy-country-house-a2-04-homework-v1'],
+    'country-house-travel-a2-05.html':['country_house','gostudy-country-house-travel-a2-05-v1'],
+    'country-house-travel-a2-05-homework.html':['country_house','gostudy-country-house-travel-a2-05-homework-v1'],
+    'travel-b2-04.html':['travel_b2','gostudy-travel-b2-04-v1'],
+    'country-house-a2-03.html':['country_house','gostudy-country-house-a2-03-v1'],
+    'country-house-a2-03-homework.html':['country_house','gostudy-country-house-a2-03-homework-v1']
+  }[currentPage];
+  if (liveLesson) {
+    const [course,lessonKey] = liveLesson;
+    window.GoStudyTravelAnswers = {
+      viewing: classroomStudent !== null,
+      async read() {
+        const access = await token();
+        if (course === 'country_house' && lessonKey.startsWith('gostudy-country-house-travel-a2-05-')) {
+          const result = await request('/functions/v1/gostudy-country-house-progress-view',{
+            method:'POST',body:{studentId:classroomStudent,lessonKey}
+          },access);
+          if (!result.ok) throw Error(result.data?.error||'Не удалось загрузить ответы.');
+          return result.data?.answers || {};
+        }
+        const result = await request('/rest/v1/rpc/gostudy_'+course+'_teacher_view',{method:'POST',body:{}},access);
+        if (!result.ok || !Array.isArray(result.data)) throw Error('Не удалось загрузить ответы.');
+        const student = result.data.find(row=>row.id===classroomStudent);
+        if (!student) throw Error('Открой урок через «Войти в класс» в кабинете преподавателя.');
+        return student.progress?.find(row=>row.key===lessonKey)?.answers || {};
+      }
+    };
+  }
+
+  const workbookCourse = document.querySelector('meta[name=gostudy-course]')?.content || (countryHouse ? 'country-house' : businessAI ? 'business-ai' : currentPage === 'travel-b2-04.html' || travelB2Cabinet ? 'travel-b2' : null);
+  if (workbookCourse) {
+    keys.add('gostudy-vocabulary-'+workbookCourse+'-v1');
+    const existingCourse = ['travel-a2','finance-b1','tiktok-a2','feed-b2','first-sales','pharma-c1'].includes(workbookCourse);
+    const existingCode = workbookCourse.replaceAll('-','_');
+    const wordRpc = (action,body) => token().then(access => request(
+      existingCourse ? '/rest/v1/rpc/gostudy_'+existingCode+'_'+(action==='assign'?'assign_word':action==='remove'?'remove_word':classroomStudent?'teacher_view':'my_words') :
+      '/rest/v1/rpc/'+(workbookCourse==='travel-b2'?'travel_b2':'course')+'_workbook_'+action,
+      {method:'POST',body:existingCourse?(action==='read'?{}:body):workbookCourse==='travel-b2'?body:{p_course:workbookCourse,...body}},access));
+    window.GoStudyWorkbookWords = window.GoStudyTravelWords = {
+      assigning: classroomStudent !== null,
+      canRemoveAssigned: !existingCourse,
+      signedIn: !!session,
+      teacherWithoutStudent: classroomStudent === null && (() => {
+        try { return !!json(localStorage.getItem(teacherSessionKey))?.user?.id; } catch { return false; }
+      })(),
+      async remove(en) {
+        if (!session) throw Error('Войди в кабинет преподавателя.');
+        const result=await wordRpc('remove',{p_student:classroomStudent,p_en:en});
+        if (!result.ok || result.data !== true) throw Error('Не удалось удалить слово.');
+      },
+      async read() {
+        if (!session) return [];
+        const result = await wordRpc('read',{p_student:classroomStudent});
+        if (!result.ok || !Array.isArray(result.data)) throw Error('Не удалось загрузить слова.');
+        return existingCourse && classroomStudent ? (result.data.find(row=>row.id===classroomStudent)?.assigned || []) : result.data;
+      },
+      async add(en,ru) {
+        if (!session) throw Error('Войди в кабинет преподавателя.');
+        const result = await wordRpc('assign',{p_student:classroomStudent,p_en:en,p_ru:ru});
+        if (!result.ok || result.data !== true) throw Error('Не удалось добавить слово. Открой урок через «Войти в класс».');
+      }
+    };
+  }
+
+  function mountLesson() {
+    const link = document.createElement('a');
+    link.href = businessAI || countryHouse || travelB2Cabinet || document.getElementById('lesson-data') ? 'login.html' : accountPage;
+    link.textContent = session ? 'Аккаунт GoStudy' : 'Войти для синхронизации';
+    link.className = 'gostudy-cloud-link';
+    const status = document.createElement('span');
+    status.dataset.cloudStatus = '';
+    status.setAttribute('role', 'status');
+    if (session) status.textContent = 'Синхронизация…';
+    const box = document.createElement('aside');
+    box.className = 'gostudy-cloud-bar';
+    box.append(link, status);
+    (document.querySelector('header') || document.body).after(box);
+    if (!session) return;
+    synchronize({reload: true}).catch(report);
+    window.addEventListener('online', () => synchronize({reload: true}).catch(report));
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) synchronize({reload: true}).catch(report);
+    });
+  }
+
+  function mountTeacherWords() {
+    if ((!travelA2 && !financeB1 && !feedB2 && !firstSales && !pharmaC1 && !tiktokA2) || !session) return;
+    const course = tiktokA2 ? 'tiktok_a2' : pharmaC1 ? 'pharma_c1' : firstSales ? 'first_sales' : feedB2 ? 'feed_b2' : financeB1 ? 'finance_b1' : 'travel_a2';
+    const dictionary = document.getElementById('dictionary');
+    const dictionaryButton = document.getElementById('dictBtn');
+    const targets = [dictionary, document.getElementById('words')].filter(Boolean);
+    const panels = targets.map(target => {
+      const section = document.createElement('section');
+      section.className = 'gostudy-teacher-words';
+      const title = document.createElement('h3');
+      title.textContent = 'Слова от преподавателя';
+      const list = document.createElement('ul');
+      section.append(title, list);
+      section.hidden = true;
+      if (target === dictionary) {
+        const form = target.querySelector('#wordForm');
+        if (form) form.before(section);
+        else target.prepend(section);
+      } else {
+        target.prepend(section);
+      }
+      return {section, list};
+    });
+    if (!panels.length) return;
+    const shortcut = document.createElement('button');
+    shortcut.type = 'button';
+    shortcut.className = 'gostudy-cloud-link';
+    shortcut.hidden = true;
+    shortcut.onclick = () => {
+      if (dictionary && !dictionary.open) {
+        if (dictionaryButton) dictionaryButton.click();
+        else dictionary.showModal();
+      }
+      panels[0].section.scrollIntoView({block:'nearest'});
+    };
+    document.querySelector('.gostudy-cloud-bar')?.append(shortcut);
+    let last = '';
+    const refresh = async () => {
+      try {
+        if (document.hidden) return;
+        const result = await request('/rest/v1/rpc/' + 'gostudy_' + course + '_my_words', {method:'POST',body:{}}, await token());
+        if (!result.ok || !Array.isArray(result.data)) return;
+        const signature = JSON.stringify(result.data);
+        if (signature === last) return;
+        last = signature;
+        shortcut.hidden = !result.data.length;
+        shortcut.textContent = 'Слова от преподавателя · ' + result.data.length;
+        for (const {section,list} of panels) {
+          section.hidden = result.data.length === 0;
+          list.replaceChildren(...result.data.map(word => {
+            const row = document.createElement('li');
+            row.textContent = word.en + ' — ' + word.ru;
+            if ('speechSynthesis' in window) {
+              const play = document.createElement('button');
+              play.type = 'button';
+              play.className = 'gostudy-word-play';
+              play.textContent = '🔊';
+              play.setAttribute('aria-label', 'Прослушать ' + word.en);
+              play.onclick = () => {
+                speechSynthesis.cancel();
+                const voice = new SpeechSynthesisUtterance(word.en);
+                voice.lang = 'en-GB';
+                speechSynthesis.speak(voice);
+              };
+              row.append(' ',play);
+            }
+            return row;
+          }));
+        }
+      } catch {
+        // The existing list stays visible during a network interruption.
+      } finally { setTimeout(refresh, 5000); }
+    };
+    refresh();
+  }
+
+  function wordItems(target, words, pronounce = false) {
+    const entries = Array.isArray(words) ? words.filter(word => word && typeof word.en === 'string' && typeof word.ru === 'string') : [];
+    target.replaceChildren(...entries.map(word => {
+      const item = document.createElement('li');
+      item.textContent = word.en + ' — ' + word.ru;
+      if (pronounce && 'speechSynthesis' in window) {
+        const play = document.createElement('button');
+        play.className = 'gostudy-word-play';
+        play.type = 'button';
+        play.textContent = '🔊';
+        play.setAttribute('aria-label','Прослушать '+word.en);
+        play.onclick = () => {
+          speechSynthesis.cancel();
+          const voice = new SpeechSynthesisUtterance(word.en);
+          voice.lang = 'en-GB';
+          speechSynthesis.speak(voice);
+        };
+        item.append(' ',play);
+      }
+      return item;
+    }));
+    if (!entries.length) {
+      const item = document.createElement('li');
+      item.textContent = 'Пока пусто.';
+      target.append(item);
+    }
+    return entries.length;
+  }
+
+  function answerText(value) {
+    return Array.isArray(value) ? value.join(' → ') :
+      typeof value === 'object' ? JSON.stringify(value) :
+      typeof value === 'boolean' ? (value ? 'Отмечено' : 'Снято') : String(value);
+  }
+
+  async function assignClassroomWord(course, student, en, ru) {
+    const response = await request('/rest/v1/rpc/gostudy_' + course + '_assign_word', {
+      method:'POST',body:{p_student:student,p_en:en,p_ru:ru},
+    },await token());
+    if (!response.ok || response.data !== true) throw new Error('Не удалось добавить слово. Проверьте доступ и поля.');
+  }
+
+  function mountClassroom() {
+    const page = classroomPages.get(location.pathname.split('/').pop());
+    const content = document.getElementById('content');
+    if (!page || !content) return;
+    const root = document.createElement('aside');
+    root.className = 'gostudy-classroom';
+    root.innerHTML = '<a class="gostudy-classroom-back" href="gostudy-teacher.html">← К ученикам</a><details><summary>Ученик</summary><div class="gostudy-classroom-panel"><p role="status"></p><h3>Ответы в этом разделе</h3><dl></dl><h3>Слова ученика</h3><ul></ul><h3>Назначенные слова</h3><ul></ul></div></details>';
+    document.body.append(root);
+    const back = root.querySelector('a');
+    back.href = 'gostudy-teacher.html?selected='+encodeURIComponent(page.course+':'+classroomStudent);
+    if (document.querySelector('.gostudy-cabinet-back')) back.remove();
+    document.querySelector('.gostudy-room-sidebar .sections')?.before(root);
+    const summary = root.querySelector('summary');
+    const panelStatus = root.querySelector('[role="status"]');
+    const answers = root.querySelector('dl');
+    const [studentWords,assignedWords] = root.querySelectorAll('ul');
+    const dictionary = document.getElementById('dictionary');
+    const wordForm = dictionary?.querySelector('#wordForm');
+    const dictionaryStatus = dictionary?.querySelector('#dictStatus');
+    let dictionaryLists;
+    let dictionaryCount;
+    const originalCount = document.getElementById('wordCount');
+    if (originalCount) {
+      originalCount.hidden = true;
+      dictionaryCount = document.createElement('span');
+      originalCount.after(dictionaryCount);
+    }
+    if (dictionary) {
+      dictionary.classList.add('gostudy-classroom-dictionary');
+      dictionary.querySelector('.menu-top h2').textContent = 'Словарь ученика';
+      const oldList = dictionary.querySelector('#wordList');
+      if (oldList) oldList.hidden = true;
+      const training = dictionary.querySelector('#trainWords');
+      if (training) training.hidden = true;
+      const exportWords = dictionary.querySelector('#exportWords');
+      if (exportWords) exportWords.hidden = true;
+      if (wordForm) {
+        const submit = wordForm.querySelector('button[type="submit"]');
+        if (submit) submit.textContent = 'Добавить ученику';
+      }
+      const sections = document.createElement('div');
+      sections.className = 'gostudy-classroom-dictionary-lists';
+      for (const title of ['Сохранил ученик','Слова от преподавателя']) {
+        const section = document.createElement('section');
+        section.className = 'gostudy-teacher-words';
+        const heading = document.createElement('h3');
+        heading.textContent = title;
+        section.append(heading,document.createElement('ul'));
+        sections.append(section);
+      }
+      dictionary.append(sections);
+      dictionaryLists = sections.querySelectorAll('ul');
+    }
+    const sourceButton = document.getElementById('saveSelected');
+    const popup = document.getElementById('translationPop');
+    const send = document.createElement('button');
+    send.className = 'gostudy-classroom-send';
+    send.type = 'button';
+    send.textContent = 'Добавить ученику';
+    const sendStatus = document.createElement('p');
+    sendStatus.className = 'gostudy-classroom-send-status';
+    sendStatus.setAttribute('role','status');
+    if (popup && sourceButton) {
+      popup.classList.add('gostudy-classroom-translation');
+      sourceButton.style.setProperty('display','none','important');
+      const entry = sourceButton.closest('.translation-entry');
+      if (entry) entry.style.setProperty('display','block','important');
+      const translation = document.getElementById('selectedMeaning');
+      if (translation) {
+        translation.style.setProperty('width','100%','important');
+        translation.style.setProperty('writing-mode','horizontal-tb','important');
+      }
+      popup.append(send,sendStatus);
+    }
+    let student;
+    let signature = '';
+    let busy = false;
+    let sending = false;
+
+    function inlineAnswers() {
+      content.querySelectorAll('.gostudy-student-answer').forEach(node => node.remove());
+      const progress = student?.progress?.find(row => row.key === page.key);
+      const values = progress?.answers || {};
+      const groups = new Map();
+      const controls = content.querySelectorAll('[data-q],[data-answer],[data-can],.gap-options input[type="radio"]');
+      for (const control of controls) {
+        const group = control.closest('.question,.gap-options');
+        const key = control.dataset.q ? 'q'+control.dataset.q.replace(':','-') : control.dataset.answer || control.dataset.can || (group?.classList.contains('gap-options') ? group.id : '');
+        if (!key || !Object.hasOwn(values,key)) continue;
+        const value = values[key];
+        if (value === '' || value === null || value === undefined) continue;
+        const saved = groups.get(key);
+        const chosen = control.type === 'radio' && (String(value)===control.value || String(value)===control.closest('.option')?.querySelector('.option-text,span')?.textContent?.trim());
+        if (saved && !chosen) continue;
+        const optionText = chosen ? control.closest('.option')?.querySelector('.option-text,span')?.textContent?.trim() : '';
+        groups.set(key,{anchor:group || control,label:group?.querySelector('p')?.textContent?.trim() || control.getAttribute('aria-label') || control.placeholder || 'Задание '+(groups.size+1), value:optionText || answerText(value)});
+      }
+      answers.replaceChildren();
+      if (!groups.size) {
+        const empty = document.createElement('dd');
+        empty.textContent = 'В этом разделе пока нет ответов.';
+        answers.append(empty);
+      }
+      for (const {anchor,label,value} of groups.values()) {
+        const note = document.createElement('span');
+        note.className = 'gostudy-student-answer';
+        note.textContent = 'Ответ ученика: '+value;
+        anchor.after(note);
+        const name = document.createElement('dt');
+        const result = document.createElement('dd');
+        name.textContent = label;
+        result.textContent = value;
+        answers.append(name,result);
+      }
+    }
+
+    function render() {
+      const count = wordItems(studentWords,student?.words);
+      const assigned = wordItems(assignedWords,student?.assigned);
+      if (dictionaryLists) {
+        wordItems(dictionaryLists[0],student?.words,true);
+        wordItems(dictionaryLists[1],student?.assigned,true);
+      }
+      if (dictionaryCount) dictionaryCount.textContent = count+assigned;
+      summary.textContent = student ? (student.label || 'Ученик') + ' · Слова: '+count : 'Ученик';
+      inlineAnswers();
+    }
+
+    async function refresh() {
+      if (busy || document.hidden) return;
+      if (!session) {
+        panelStatus.textContent = 'Войдите в кабинет преподавателя, чтобы открыть данные ученика.';
+        return;
+      }
+      busy = true;
+      try {
+        const response = await request('/rest/v1/rpc/gostudy_' + page.course + '_teacher_view',{method:'POST',body:{}},await token());
+        if (!response.ok || !Array.isArray(response.data)) throw new Error('Данные ученика временно недоступны.');
+        const selected = response.data.find(row => row.id===classroomStudent);
+        const next = JSON.stringify(selected ?? null);
+        student = selected;
+        if (signature !== next) {
+          signature = next;
+          render();
+        }
+        panelStatus.textContent = student ? '' : 'Этот ученик не привязан к вашему аккаунту для этого курса.';
+      } catch (error) {
+        panelStatus.textContent = error.message;
+      } finally { busy = false; }
+    }
+
+    async function sendWord(en,ru,status) {
+      if (sending || !status) return false;
+      if (!session) {
+        const login = document.createElement('a');
+        login.href = root.querySelector('a').href;
+        login.textContent = 'Войти в кабинет преподавателя';
+        status.replaceChildren('Для отправки слова войдите в GoStudy. ',login);
+        return false;
+      }
+      if (!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(classroomStudent)) {
+        status.textContent = 'Откройте урок через список уроков выбранного ученика.';
+        return false;
+      }
+      if (/[а-яё]/i.test(en) && /[a-z]/i.test(ru) && !/[а-яё]/i.test(ru)) [en,ru] = [ru,en];
+      if (!en || !ru) {
+        status.textContent = 'Введите слово и перевод.';
+        return false;
+      }
+      sending = true;
+      send.disabled = true;
+      status.textContent = 'Добавляем…';
+      try {
+        await assignClassroomWord(page.course,classroomStudent,en,ru);
+        status.textContent = 'Слово добавлено ученику.';
+        refresh();
+        return true;
+      } catch (error) {
+        status.textContent = error.message;
+        return false;
+      } finally {
+        sending = false;
+        send.disabled = false;
+      }
+    }
+    send.addEventListener('click',() => {
+      const en = document.getElementById('selectedWord')?.textContent.trim() || '';
+      const ru = document.getElementById('selectedMeaning')?.value.trim() || '';
+      sendWord(en,ru,sendStatus);
+    });
+    if (wordForm) wordForm.onsubmit = async event => {
+      event.preventDefault();
+      const en = wordForm.querySelector('#newWord')?.value.trim() || '';
+      const ru = wordForm.querySelector('#newMeaning')?.value.trim() || '';
+      if (await sendWord(en,ru,dictionaryStatus)) {
+        wordForm.reset();
+        dictionaryStatus.textContent = 'Слово добавлено ученику.';
+      }
+    };
+
+    function retainClassroomLinks(rootElement) {
+      for (const link of rootElement.querySelectorAll('a[href]')) {
+        const url = new URL(link.href,location.href);
+        if (url.origin !== location.origin) continue;
+        const filename = url.pathname.split('/').pop();
+        if (classroomPages.get(filename)?.course === page.course) {
+          link.href = classroomLink(filename+url.hash,classroomStudent);
+        } else if (filename === cabinetPage) {
+          link.href = root.querySelector('a').href;
+          link.textContent = '← К урокам ученика';
+        }
+      }
+    }
+    retainClassroomLinks(document);
+    new MutationObserver(() => {
+      retainClassroomLinks(content);
+      inlineAnswers();
+    }).observe(content,{childList:true});
+    render();
+    refresh();
+    if (session) {
+      const poll = setInterval(refresh,3500);
+      window.addEventListener('pagehide',event => { if (!event.persisted) clearInterval(poll); });
+      document.addEventListener('visibilitychange',refresh);
+    }
+  }
+
+  function mountTeacher() {
+    window.GoStudyTeacherAuth={token,request,userId:()=>session?.user?.id};
+    const login = document.getElementById('teacher-login');
+    const dashboard = document.getElementById('teacher-dashboard');
+    const message = document.getElementById('teacher-status');
+    const studentPicker = document.getElementById('teacher-student');
+    const wordForm = document.getElementById('teacher-word');
+    const answerList = document.getElementById('teacher-answers');
+    const studentWords = document.getElementById('teacher-student-words');
+    const assignedWords = document.getElementById('teacher-assigned-words');
+    const lessonLabels = new Map([
+      ['gostudy-travel-disruptions-b2-v1','Урок 1 · When the trip goes off plan'],
+      ['gostudy-sports-b2-football-academies-04-v1','Урок 04 · Football Academies'],
+      ['gostudy-sports-b2-football-academies-04-homework-v1',"Домашняя 04 · Academy Director's Report"],
+      ['gostudy-travel-b2-02-v1','Урок 2 · The case of the missing suitcase'],
+      ['gostudy-travel-b2-03-v1','Урок 3 · A Room That Wasn’t There'],
+      ['gostudy-travel-b2-04-v1','Урок 4 · The Last Connection'],
+      ['gostudy-country-house-a2-03-v1','Урок 3 · Before the Rain Comes'],
+      ['gostudy-country-house-a2-03-homework-v1','Домашка 3 · Sunday at the Cottage'],
+      ['gostudy-tiktok-a2-v1','Урок · One More Video?'],
+      ['gostudy-tiktok-a2-homework-v1','Домашнее задание · TikTok A2'],
+      ['gostudy-travel-a2plus-v1','Урок 1 · A weekend away'],
+      ['gostudy-travel-a2plus-homework-v1','Домашка 1'],
+      ['gostudy-travel-a2plus-02-v1','Урок 2 · A day out in York'],
+      ['gostudy-travel-a2plus-02-homework-v1','Домашка 2'],
+      ['gostudy-travel-a2plus-03-v1','Урок 3 · A day by the sea'],
+      ['gostudy-travel-a2plus-03-homework-v1','Домашка 3'],
+      ['gostudy-travel-a2plus-04-v1','Урок 4 · The train is late'],
+      ['gostudy-travel-a2plus-04-homework-v1','Домашка 4'],
+      ['gostudy-finance-b1-v1','Урок 1 · Money moves'],
+      ['gostudy-finance-b1-homework-v1','Домашка 1 · Finance B1'],
+      ['gostudy-finance-b1-02-v1','Урок 2 · Where did my money go?'],
+      ['gostudy-finance-b1-02-homework-v1','Домашка 2 · Finance B1'],
+      ['gostudy-feed-b2-v1','Урок 1 · Feed B2'],
+      ['gostudy-feed-b2-02-v1','Урок 2 · Feed B2'],
+      ['gostudy-feed-b2-02-homework-v1','Домашка 2 · Feed B2'],
+      ['gostudy-feed-b2-03-v1','Урок 3 · Feed B2'],
+      ['gostudy-feed-b2-03-homework-v1','Домашка 3 · Feed B2'],
+      ['gostudy-feed-b2-04-v1','Урок 4 · A real photo, a false story'],
+      ['gostudy-feed-b2-04-homework-v1','Домашка 4 · Feed B2'],
+      ['gostudy-feed-b2-korean-wave-20261118-v1','Урок 5 · Korean Wave: Who Influences Whom?'],
+      ['gostudy-first-sales-c1-v1','Урок 1 · Your First Sales Interview'],
+      ['gostudy-first-sales-c1-homework-v1','Домашка 1 · First Sales C1'],
+      ['gostudy-first-sales-c1-02-v1','Урок 2 · Your First Discovery Call'],
+      ['gostudy-first-sales-c1-02-homework-v1','Домашка 2 · First Sales C1'],
+      ['gostudy-pharma-c1-v1','Урок 1 · Beyond the launch'],
+      ['gostudy-pharma-c1-02-v1','Урок 2 · From feedback to strategy'],
+      ['gostudy-pharma-c1-02-homework-v1','Домашка 2 · Pharma C1'],
+      ['gostudy-pharma-c1-03-v1','Урок 3 · Can AI Help Doctors Spot Cancer?'],
+      ['gostudy-pharma-c1-03-homework-v1','Домашка 3 · Pharma C1'],
+      ['gostudy-pharma-c1-ai-evidence-20261118-v1','Урок 4 · Can AI Really Invent New Medicines?'],
+    ]);
+    const lesson4Labels = {
+      hwRead1:'Что делала Элла?', hwRead2:'Проблема с поездом в 10:45', hwRead3:'Почему решили подождать?',
+      hwListen1:'Новое время отправления', hwListen2:'Номер платформы', hwListen3:'Место встречи',
+      hwG1:'I … on the platform', hwG2:'The assistant … us', hwG3:'They … for the platform',
+    };
+    const finance2Labels = {hwRead1:'Какой платёж проверила Миа?',hwRead2:'Где она нашла название приложения?',hwRead3:'Зачем Миа связалась с поддержкой?',hwListen1:'Сумма списания',hwListen2:'Когда закончился пробный период?',hwListen3:'Что Сэм уже сделал?',hwG1:'I … the statement yesterday',hwG2:'They … yet',hwG3:'She … it last Friday',hwG4:'We … support'};
+    const discoveryLabels = {
+      'q1-0':'Вопрос о процессе напоминаний','q1-1':'Вопрос о масштабе проблемы','q1-2':'Кто принимает решение',
+      'q2-0':'Что уже известно','q2-1':'Что уточнить про интеграцию','q0-0':'Аудио · первоначальная гипотеза',
+      'q0-1':'Аудио · ежедневная проблема','q0-2':'Аудио · почему без прогноза','q0-3':'Аудио · следующий шаг',
+      'q3-0':'Возражение · у нас уже есть календарь','q3-1':'Возражение · нет времени на демо',
+      salesQuestion:'Вопрос для Джордана',salesObjection:'Ответ на возражение',salesCallNotes:'Заметки со звонка',salesDebrief:'Ответ на собеседовании',
+    };
+    const discoveryHomeworkLabels = {
+      'q0-0':'Масштаб проблемы','q0-1':'Возражение о календаре','q0-2':'Следующий шаг',
+      'q1-0':'Итог разговора','q1-1':'Конкретная договорённость',salesFollowUp:'Письмо после звонка',salesIntegration:'Что проверить перед интеграцией',
+    };
+    const pharmaThreeLabels = {"q0-0":"What does the speaker suggest before a wider launch?","q0-1":"Why might the Swedish results differ at this hospital?","q0-2":"Which outcomes does the speaker want to track?","q1-0":"What changed in the AI-supported group?","q1-1":"What does the 44% figure describe?","q1-2":"What could a hospital reasonably ask next?","q2-0":"What does 6.4 versus 5.0 per 1,000 show?","q2-1":"Which headline best fits the evidence?","pharmaPilot":"Решение о пробном запуске","pharmaHeadline":"Заголовок о результатах"};
+    const pharmaThreeHomeworkLabels = {"q0-0":"What is the role of AI in the Swedish trial?","q0-1":"What can we say about 44%?","q0-2":"What would a sensible local pilot track?","q1-0":"Which line is suitable for a report?","q1-1":"A patient asks who reviews the scan. Which reply is clearest?"};
+    const financeCourse = 'business_ai_finance';
+    const generalB2 = 'general_english_b2';
+    const placement = 'english_placement';
+    const financeLesson = 'business-ai-finance-b2-02.html';
+    const legacyTeacherCourses = new Set(['art_b1','ielts_reading','sweden_a2']);
+    const teacherCatalog = {...classroomCatalog,
+      art_b1:{name:'Art & Mosaics · B1',lessons:[{title:'Small pieces, big ideas',lesson:'art-mosaics-b1.html',homework:'art-b1-homework.html'},{title:'Every picture has a story',lesson:'art-b1-02.html',homework:'art-b1-02-homework.html'},{title:'The Gallery Makeover',lesson:'art-b1-03.html',lessonKey:'gostudy-art-b1-03-v1',homework:'art-b1-03-homework.html',homeworkKey:'gostudy-art-b1-03-homework-v1'}]},
+      ielts_reading:{name:'IELTS Reading',lessons:[{title:'IELTS Reading · Lesson 1',lesson:'ielts-reading-01.html',homework:'ielts-reading-01-homework.html'},{number:4,title:'IELTS Academic Reading 04',lesson:'ielts-reading-04.html'}]},
+      sweden_a2:{name:'Sweden · A2',lessons:[{number:2,title:'Your First Full Day in Stockholm',lesson:'sweden-a2-02-michael.html',lessonKey:'gostudy-sweden-a2-02-michael-v1',homework:'sweden-a2-02-michael-homework.html',homeworkKey:'gostudy-sweden-a2-02-michael-homework-v1'}]},
+      [placement]:{name:'My Trip to Vietnam · A2',lessons:[{title:'English Placement Test',lesson:'english-placement.html'},{title:'My Trip to Vietnam',lesson:'my-trip-to-vietnam-a2.html',lessonKey:'gostudy-vietnam-a2-20261118-v1',homework:'my-trip-to-vietnam-a2-homework.html',homeworkKey:'gostudy-vietnam-a2-homework-20261118-v1'}]},
+      [generalB2]:{name:'General English B2',lessons:[{title:'The Hidden Cost of Convenience',lesson:'general-english-b2-01.html',lessonKey:'gostudy-general-english-b2-01-v2',homework:'general-english-b2-01.html#homework'}]},
+      [financeCourse]:{
+      name:'AI in Finance · B2',
+      lessons:[{title:'AI in Finance · Lesson 2',lesson:financeLesson,homework:'business-ai-finance-b2-02-homework.html'}],
+    }};
+    const courses = new Map(Object.entries(teacherCatalog).map(([id,course]) => [id,course.name]));
+    const withoutCourse = 'without_course';
+    const addStudent = document.getElementById('teacher-add-student');
+    const addStudentForm = addStudent?.querySelector('form');
+    const addStudentStatus = document.getElementById('teacher-add-student-status');
+    if (addStudentForm) {
+      for (const [id,name] of courses) {
+        if (id === financeCourse || id === generalB2 || id === placement || ['country_house','business_ai','general_english_b1','general_english_b1_stories'].includes(id)) continue;
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = name;
+        addStudentForm.elements.course.append(option);
+      }
+      const button = addStudentForm.querySelector('button[type="submit"]');
+      const courseSelect = addStudentForm.elements.course;
+      const updateButton = () => {
+        button.textContent = courseSelect.value ? 'Создать аккаунт и назначить курс' : 'Создать аккаунт';
+      };
+      courseSelect.addEventListener('change',updateButton);
+      addStudentForm.addEventListener('submit',async event => {
+        event.preventDefault();
+        const email = addStudentForm.elements.email.value.trim();
+        const password = addStudentForm.elements.password.value;
+        const course = courseSelect.value || null;
+        button.disabled = true;
+        addStudentStatus.textContent = course ? 'Создаём аккаунт и назначаем курс…' : 'Создаём личный кабинет…';
+        try {
+          const result = await request('/functions/v1/gostudy-add-student',{method:'POST',body:{email,password,course}},await token());
+          if (!result.ok || result.data?.ok !== true) throw new Error(result.data?.error || 'Не удалось добавить ученика.');
+          addStudentForm.reset();
+          updateButton();
+          addStudentStatus.textContent = course
+            ? 'Курс назначен. Ученику можно отправить общую ссылку на вход.'
+            : 'Личный кабинет создан. Ученику можно отправить общую ссылку на вход.';
+          refresh();
+        } catch(error) {
+          addStudentStatus.textContent = error.message;
+        } finally { button.disabled = false; }
+      });
+    }
+    const rosterByCourse = new Map();
+    let students = [];
+    let studentEmails = new Map();
+    let signature = '';
+    let busy = false;
+    let pollTimer;
+    const studentSearch = document.getElementById('teacher-student-search');
+    const studentList = document.getElementById('teacher-student-list');
+    function renderStudentList() {
+      if (!studentList) return;
+      const query = studentSearch.value.trim().toLowerCase();
+      studentList.replaceChildren();
+      const count = document.getElementById('teacher-student-count');
+      if (count) count.textContent = 'Количество учеников '+new Set(students.map(student=>student.id)).size;
+      for (const student of students) {
+        const label = student.email || student.label;
+        const catalog = teacherCatalog[student.course];
+        const course = catalog?.name || 'Без курса';
+        if (!(label+' '+(student.label || '')+' '+course).toLowerCase().includes(query)) continue;
+        const row = document.createElement('div');
+        row.className = 'teacher-student-row';
+        const avatar = document.createElement('span');
+        avatar.className = 'teacher-avatar';
+        avatar.setAttribute('aria-hidden','true');
+        avatar.textContent = label.slice(0,1).toUpperCase();
+        const info = document.createElement('div');
+        const name = document.createElement('strong');
+        name.textContent = student.label || label;
+        const subtitle = document.createElement('small');
+        subtitle.textContent = student.email || course;
+        const level = document.createElement('small');
+        level.textContent = student.email ? course : '';
+        info.append(name,subtitle,level);
+        row.append(avatar,info);
+        if (catalog) {
+          const enter = document.createElement('a');
+          enter.className = 'teacher-enter-class';
+          enter.href = classroomLink(catalog.lessons.at(-1).lesson,student.id);
+          enter.textContent = '→ Войти в класс';
+          row.append(enter);
+        }
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'teacher-student-profile';
+        button.setAttribute('aria-label','Карточка ученика · '+label);
+        button.textContent = '👤';
+        button.onclick = () => {
+          studentPicker.value = student.selection;
+          const panel = document.getElementById('teacher-profile');
+          panel.open = true;
+          renderStudent();
+          panel.scrollIntoView({block:'start'});
+        };
+        row.append(button);
+        studentList.append(row);
+      }
+      if (!studentList.childElementCount) studentList.textContent = query ? 'Никого не нашли.' : 'Список пока пуст.';
+    }
+    if (studentSearch) studentSearch.oninput = renderStudentList;
+    if (new URLSearchParams(location.search).has('selected')) document.getElementById('teacher-profile')?.setAttribute('open','');
+
+    function renderStudent() {
+      renderStudentList();
+      const student = students.find(row => row.selection === studentPicker.value);
+      wordForm.hidden = !student || student.course === withoutCourse || student.course === financeCourse || student.course === generalB2 || student.course === placement || ['travel_b2','art_b1','ielts_reading','sweden_a2','country_house','business_ai','general_english_b1','general_english_b1_stories','sports_b2'].includes(student.course);
+      wordItems(studentWords, student?.words);
+      wordItems(assignedWords, student?.assigned);
+      const classroom = document.getElementById('teacher-classroom');
+      const catalog = student && teacherCatalog[student.course];
+      classroom.hidden = !catalog;
+      const heading = document.getElementById('teacher-classroom-title');
+      const lessonList = document.getElementById('teacher-classroom-lessons');
+      heading.textContent = catalog ? 'Класс · '+catalog.name : '';
+      lessonList.replaceChildren(...(catalog?.lessons.slice(-1) || []).map((lesson,index) => {
+        const row = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = classroomLink(lesson.lesson,student.id);
+        link.textContent = 'Урок '+(lesson.number || catalog.lessons.length)+' · '+lesson.title;
+        row.append(link);
+        if (lesson.homework) {
+          const homework = document.createElement('a');
+          homework.href = classroomLink(lesson.homework,student.id);
+          homework.textContent = 'Домашнее задание';
+          row.append(homework);
+        }
+        return row;
+      }));
+      const current = document.getElementById('teacher-current-lesson');
+      if (current) {
+        current.replaceChildren();
+        const active = catalog?.lessons.at(-1);
+        if (active) {
+          const label = document.createElement('p');
+          label.textContent = 'Текущий урок';
+          const title = document.createElement('h3');
+          title.textContent = active.title;
+          const actions = document.createElement('div');
+          actions.className = 'home-actions';
+          for (const [path,name] of [[active.lesson,'Войти в урок'],[active.homework,'Домашнее задание']]) {
+            if (!path) continue;
+            const link = document.createElement('a');
+            link.href = classroomLink(path,student.id);
+            link.textContent = name;
+            if (path === active.lesson) link.className = 'home-primary';
+            actions.append(link);
+          }
+          current.append(label,title,actions);
+        }
+      }
+      answerList.replaceChildren();
+      for (const [key,label] of lessonLabels) {
+        const progress = student?.progress?.find(row => row.key === key);
+        if (!progress) continue;
+        const answers = Object.entries(progress.answers || {}).filter(([,value]) => value !== '' && value !== null);
+        if (!answers.length) continue;
+        const group = document.createElement('details');
+        group.open = true;
+        const title = document.createElement('summary');
+        title.textContent = label + ' · ' + answers.length;
+        const list = document.createElement('dl');
+        for (const [id,value] of answers) {
+          const question = document.createElement('dt');
+          const answer = document.createElement('dd');
+          question.textContent = (key==='gostudy-travel-a2plus-04-v1' && lesson4Labels[id]) || (key==='gostudy-finance-b1-02-v1' && finance2Labels[id]) || (key==='gostudy-first-sales-c1-02-v1' && discoveryLabels[id]) || (key==='gostudy-first-sales-c1-02-homework-v1' && discoveryHomeworkLabels[id]) || (key==='gostudy-pharma-c1-03-v1' && pharmaThreeLabels[id]) || (key==='gostudy-pharma-c1-03-homework-v1' && pharmaThreeHomeworkLabels[id]) || id;
+          answer.textContent = answerText(value);
+          list.append(question,answer);
+        }
+        group.append(title,list);
+        answerList.append(group);
+      }
+      if (!answerList.childElementCount) answerList.textContent = student?.course === placement
+        ? 'Ответы доступны в общей комнате урока.'
+        : student?.course === withoutCourse ? 'Курс пока не назначен.'
+        : 'Ответы появятся, когда ученица войдёт и синхронизирует урок.';
+    }
+    function setSignedIn() {
+      login.hidden = !!session;
+      dashboard.hidden = !session;
+    }
+    async function refresh() {
+      if (!session || busy || document.hidden) return;
+      busy = true;
+      try {
+        const access = await token();
+        const lookup = async () => {
+          if (studentEmails.size && students.every(student => student.course === financeCourse || student.course === placement || studentEmails.has(student.id))) return;
+          const response = await request('/rest/v1/rpc/gostudy_teacher_student_emails',{method:'POST',body:{}},access);
+          if (!response.ok || !Array.isArray(response.data)) throw new Error('Не удалось загрузить почту учеников.');
+          studentEmails = new Map(response.data.map(row => [row.id,row.email]));
+        };
+        const lookupWithoutCourse = async () => {
+          const response = await request('/rest/v1/rpc/gostudy_students_without_course',{method:'POST',body:{}},access);
+          if (!response.ok || !Array.isArray(response.data)) throw new Error('Не удалось загрузить учеников без курса.');
+          rosterByCourse.set(withoutCourse,response.data.map(row=>({
+            id:row.id,label:row.email,email:row.email,course:withoutCourse,selection:withoutCourse+':'+row.id,
+          })));
+        };
+        const results = await Promise.allSettled([lookup(),lookupWithoutCourse(),...Array.from(courses, async ([course,label]) => {
+          if (course === financeCourse) {
+            const response = await request('/rest/v1/gostudy_finance_room?select=student_id&teacher_id=eq.' + encodeURIComponent(session.user.id), {}, access);
+            if (!response.ok || !Array.isArray(response.data)) throw new Error(label);
+            rosterByCourse.set(course, response.data.map(row => ({
+              id:row.student_id, label:'Михаил', course, selection:course+':'+row.student_id,
+            })));
+            return;
+          }
+          if (course === generalB2 || course === placement || course === 'sports_b2') {
+            const query = new URLSearchParams({select:'student_id,student_label',course:'eq.'+course.replaceAll('_','-'),teacher_id:'eq.'+session.user.id});
+            const response = await request('/rest/v1/gostudy_classroom_rooms?'+query, {}, access);
+            if (!response.ok || !Array.isArray(response.data)) throw new Error(label);
+            rosterByCourse.set(course,response.data.map(row=>({
+              id:row.student_id,label:row.student_label,email:course === placement ? row.student_label : undefined,course,selection:course+':'+row.student_id,
+            })));
+            return;
+          }
+          const rpc = legacyTeacherCourses.has(course) ? 'gostudy_legacy_teacher_view' : 'gostudy_' + course + '_teacher_view';
+          const body = legacyTeacherCourses.has(course) ? {p_course:course} : {};
+          const response = await request('/rest/v1/rpc/'+rpc, {method:'POST',body}, access);
+          if (!response.ok || !Array.isArray(response.data)) throw new Error(label);
+          rosterByCourse.set(course, response.data.map(row => ({...row,course,selection:course+':'+row.id})));
+        })]);
+        const roster = Array.from(courses.keys()).flatMap(course => (rosterByCourse.get(course) || []).map(row => ({...row,email:row.email || studentEmails.get(row.id)})));
+        const assigned = new Set(roster.map(student=>student.id));
+        roster.push(...(rosterByCourse.get(withoutCourse) || []).filter(student=>!assigned.has(student.id)));
+        const next = JSON.stringify(roster);
+        if (signature !== next) {
+          const selected = studentPicker.value || new URLSearchParams(location.search).get('selected');
+          signature = next;
+          students = roster;
+          if (addStudent) addStudent.hidden = !students.length;
+          studentPicker.replaceChildren(...students.map(student => {
+            const option = document.createElement('option');
+            option.value = student.selection;
+            option.textContent = student.email ? student.email+' · '+(courses.get(student.course) || 'Без курса') : student.label;
+            return option;
+          }));
+          if (students.some(student => student.selection === selected)) studentPicker.value = selected;
+          renderStudent();
+        }
+        message.textContent = results.some(result => result.status === 'rejected') ? 'Часть данных пока недоступна.' : students.length ? 'Ответы обновляются автоматически.' : 'К этому аккаунту пока не привязаны ученики.';
+      } catch(error) { message.textContent = error.message; }
+      finally { busy = false; }
+    }
+    function startPolling() {
+      clearInterval(pollTimer);
+      refresh();
+      pollTimer = setInterval(refresh, 3500);
+    }
+    login.addEventListener('submit', async event => {
+      event.preventDefault();
+      const button = login.querySelector('button');
+      const password = login.elements.password.value;
+      login.elements.password.value = '';
+      button.disabled = true;
+      message.textContent = 'Входим…';
+      try {
+        const result = await request('/auth/v1/token?grant_type=password',{method:'POST',body:{email:login.elements.email.value.trim(),password}});
+        if (!result.ok) throw new Error('Не удалось войти. Проверьте почту и пароль.');
+        const roles = await request('/rest/v1/rpc/gostudy_my_destinations',{method:'POST',body:{}},result.data.access_token);
+        if (!roles.ok || !roles.data?.some(row=>row.course==='teacher')) throw Error('У аккаунта нет доступа к кабинету преподавателя.');
+        saveSession(result.data,true);
+        setSignedIn();
+        startPolling();
+      } catch(error) { message.textContent = error.message; }
+      finally { button.disabled = false; }
+    });
+    studentPicker.onchange = renderStudent;
+    wordForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      const button = wordForm.querySelector('button');
+      const status = document.getElementById('teacher-word-status');
+      button.disabled = true;
+      try {
+        const student = students.find(row => row.selection === studentPicker.value);
+        if (!student || !courses.has(student.course)) throw new Error('Выберите ученика.');
+        await assignClassroomWord(student.course,student.id,wordForm.elements.en.value.trim(),wordForm.elements.ru.value.trim());
+        wordForm.reset();
+        status.textContent = 'Слово добавлено.';
+        refresh();
+      } catch(error) { status.textContent = error.message; }
+      finally { button.disabled = false; }
+    });
+    document.getElementById('teacher-signout').onclick = () => {
+      localStorage.removeItem(teacherSessionKey);
+      if (savedSession()?.user.id === session?.user.id) localStorage.removeItem(rememberedKey);
+      sessionStorage.removeItem(authKey);
+      location.reload();
+    };
+    setSignedIn();
+    if (session) startPolling();
+  }
+
+  function mountLessonHeader() {
+    const oldHeader = document.querySelector('header');
+    if (!oldHeader) return;
+    // Some protected lessons (including B1 Stories) already ship the approved
+    // shared header. Do not hide it and append a competing legacy header.
+    if (oldHeader.classList.contains('gostudy-lesson-topbar')) return;
+    const course = document.querySelector('meta[name=gostudy-course]').content;
+    const bar = document.createElement('header');
+    bar.className = 'gostudy-lesson-topbar';
+    bar.innerHTML = '<span class="gostudy-lesson-logo"><span class="gostudy-lesson-mark" aria-hidden="true">G</span>GoStudy</span><a class="gostudy-cabinet-back">← В личный кабинет</a>';
+    bar.querySelector('a').href = classroomStudent
+      ? 'gostudy-teacher.html?selected='+encodeURIComponent(course.replaceAll('-','_')+':'+classroomStudent)
+      : course === 'pharma-c1' ? 'student-pharma.html' : 'student-'+course+'.html';
+    oldHeader.hidden = true;
+    oldHeader.style.setProperty('display','none','important');
+    oldHeader.before(bar);
+    const shell = document.querySelector('.shell');
+    if (!shell || document.querySelector('.room > .sheet')) return;
+    const content = shell.matches('main') ? shell : shell.querySelector('main');
+    if (!content) return;
+    document.body.classList.add('color-workbook', 'gostudy-adapted-lesson');
+    const ui = window.GoStudyClassroomUI;
+    const courseLabel = classroomCatalog[course.replaceAll('-','_')]?.name || course;
+    const room = ui.createRoom(shell, courseLabel);
+    room.classList.add('gostudy-shared-room');
+    const sidebar = room.querySelector('.side');
+    const step = ui.createStep(room.querySelector('.sheet'));
+    step.content.append(shell);
+    const menu = content.querySelector('.lesson-bar');
+    if (menu) menu.hidden = true;
+    const goal = content.querySelector('#goal');
+    if (goal) goal.classList.add('instruction');
+    const nav = document.querySelector('#lessonMenu #nav');
+    const staticSections = [...content.querySelectorAll(':scope > section.card')];
+    const sections = sidebar.querySelector('.sections');
+    function updateSections() {
+      const original = [...(nav?.querySelectorAll('button') || [])];
+      const items = nav ? original : staticSections;
+      const current = Math.max(0, original.findIndex(item => item.classList.contains('active')));
+      step.update(courseLabel, current, items.length);
+      const titles = items.map((item,index) => nav
+        ? [...item.childNodes].filter(node => node.nodeType === Node.TEXT_NODE).map(node => node.textContent).join('').trim() || item.textContent
+        : item.querySelector('h2')?.textContent || 'Section '+(index+1));
+      ui.renderSections(sections, titles, current, index => {
+        if (nav) items[index].click();
+        else {
+          step.update(courseLabel, index, items.length);
+          sections.querySelector('[aria-current]')?.removeAttribute('aria-current');
+          sections.querySelectorAll('button')[index].setAttribute('aria-current','step');
+          items[index].scrollIntoView({block:'start'});
+        }
+      });
+    }
+    updateSections();
+    if (nav) new MutationObserver(updateSections).observe(nav,{childList:true,subtree:true});
+    for (const selector of ['.glass-lesson-tools', '.glass-translation']) {
+      const tool = document.querySelector(selector);
+      if (tool) sections.before(tool);
+    }
+  }
+
+  if (document.body?.hasAttribute('data-preserve-workbook-progress')) {
+    window.GoStudyV1Progress = {
+      ready: session && classroomStudent === null ? synchronize().catch(() => {}) : Promise.resolve(),
+    };
+    return;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('dictionary') || document.getElementById('translationPop')) {
+      const vocabularyStyles = document.createElement('link');
+      vocabularyStyles.rel = 'stylesheet';
+      vocabularyStyles.href = 'assets/gostudy-classroom.css?v=4';
+      document.head.append(vocabularyStyles);
+    }
+    if (document.querySelector('meta[name=gostudy-current-lesson]')) mountLessonHeader();
+    if (storiesLesson) mountStoriesWorkbook();
+    else if (document.getElementById('lesson-data')) {
+      if (classroomStudent === null) mountLesson();
+      if (session) token().then(access => request('/rest/v1/rpc/gostudy_my_destinations',{method:'POST',body:{}},access)).then(response => {
+        if (response.ok && Array.isArray(response.data) && response.data.some(row => row.course === 'teacher')) {
+          document.querySelector('.sections').hidden = false;
+          document.dispatchEvent(new Event('gostudy-teacher-confirmed'));
+          const back = document.querySelector('.gostudy-cabinet-back');
+          if (back && classroomStudent && workbookCourse) back.href = 'gostudy-teacher.html?selected='+encodeURIComponent(workbookCourse.replaceAll('-','_')+':'+classroomStudent);
+        }
+      }).catch(() => {});
+    }
+    else if (document.getElementById('teacher-login')) mountTeacher();
+    else if (document.getElementById('unified-login')) mountUnifiedAccount();
+    else if (document.getElementById('cloud-login')) mountAccount();
+    else if (travelB2Cabinet) mountProtectedCabinet(document.getElementById('travel-b2-cabinet'),'travel-b2','Travel B2');
+    else if (storiesCabinet) mountProtectedCabinet(document.getElementById('general-b1-cabinet'),storiesCourse,'General English B1');
+    else if (generalB1Cabinet) mountProtectedCabinet(document.getElementById('general-b1-cabinet'),generalB1Course,'General English B1');
+    else if (document.getElementById('tiktok-cabinet')) mountProtectedCabinet(document.getElementById('tiktok-cabinet'),'tiktok-a2','TikTok A2');
+    else if (classroomStudent !== null) mountClassroom();
+    else { mountStudentHome(); mountLesson(); mountTeacherWords(); }
+  });
+})();
